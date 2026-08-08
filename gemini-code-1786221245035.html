@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MM2 Fan Platform | Ultimate Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --dark-bg: #03050a;
+            --panel-bg: #080d1a;
+            --cyan-glow: #00e5ff;
+            --cyan-dark: #008b99;
+            --glass-bg: rgba(8, 13, 26, 0.5);
+            --glass-border: rgba(0, 229, 255, 0.15);
+            --mx: 0px;
+            --my: 0px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: #fff;
+            overflow-x: hidden;
+            background-image: 
+                linear-gradient(rgba(0, 229, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 229, 255, 0.02) 1px, transparent 1px);
+            background-size: 40px 40px;
+            cursor: crosshair;
+        }
+
+        #backgroundCanvas, #cursorCanvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            pointer-events: none;
+            z-index: 0;
+        }
+        #cursorCanvas { z-index: 9999; mix-blend-mode: screen; }
+
+        .fog-container {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 1; pointer-events: none;
+            background: radial-gradient(circle at center, rgba(0, 229, 255, 0.06) 0%, transparent 70%);
+            filter: blur(60px);
+            transform: translate(calc(var(--mx) * 0.02), calc(var(--my) * 0.02));
+        }
+
+        .wrapper { position: relative; z-index: 10; }
+
+        section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 100px 5%;
+            position: relative;
+        }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            justify-content: space-between;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .hero-content {
+            width: 50%;
+            transform: translate(calc(var(--mx) * 0.03), calc(var(--my) * 0.03));
+        }
+
+        .subtitle {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            color: var(--cyan-glow);
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+        }
+
+        .title {
+            font-size: 4.5rem;
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, #ffffff 30%, var(--cyan-dark) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            padding: 30px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+        }
+
+        .glass-panel p {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .btn-group { display: flex; gap: 20px; }
+        
+        .btn {
+            padding: 15px 35px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #fff;
+            background: transparent;
+            border: 1px solid var(--glass-border);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: rgba(0, 229, 255, 0.1);
+            border-color: var(--cyan-glow);
+            box-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: var(--cyan-dark);
+            box-shadow: 0 0 40px var(--cyan-glow);
+            transform: translateY(-3px);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-3px);
+        }
+
+        /* Hero Visual (Weapon Showcase) */
+        .hero-visual {
+            width: 45%;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transform: translate(calc(var(--mx) * -0.05), calc(var(--my) * -0.05));
+        }
+
+        .weapon-container {
+            position: relative;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: floatWeapon 5s ease-in-out infinite;
+        }
+
+        .weapon-image {
+            width: 380px;
+            height: auto;
+            position: relative;
+            z-index: 2;
+            filter: drop-shadow(0 0 20px rgba(0, 229, 255, 0.6));
+            transition: transform 0.5s ease, opacity 0.3s ease;
+        }
+
+        .blue-fire {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px; height: 300px;
+            background: radial-gradient(circle, rgba(0, 229, 255, 0.7) 0%, rgba(0, 139, 153, 0.3) 50%, transparent 70%);
+            filter: blur(30px);
+            z-index: 1;
+            mix-blend-mode: screen;
+            animation: fireFlicker 2s infinite alternate;
+        }
+
+        @keyframes floatWeapon {
+            0% { transform: translateY(0px) rotateZ(0deg); }
+            50% { transform: translateY(-20px) rotateZ(2deg); }
+            100% { transform: translateY(0px) rotateZ(0deg); }
+        }
+
+        @keyframes fireFlicker {
+            0% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.7; }
+            100% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
+        }
+
+        /* Selector for Showcase */
+        .weapon-selectors {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .weapon-dot {
+            width: 14px; height: 14px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .weapon-dot.active {
+            background: var(--cyan-glow);
+            border-color: #fff;
+            box-shadow: 0 0 10px var(--cyan-glow);
+        }
+
+        .weapon-info-tag {
+            text-align: center;
+            margin-top: 15px;
+        }
+        .weapon-info-tag h3 { font-size: 1.4rem; color: #fff; }
+        .weapon-info-tag span { color: var(--cyan-glow); font-size: 0.9rem; font-weight: bold; }
+
+        /* --- CASE OPENER SECTION (Mini-game) --- */
+        .cases-section {
+            flex-direction: column;
+            background: linear-gradient(180deg, transparent, rgba(0, 229, 255, 0.02) 50%, transparent);
+        }
+
+        .case-box {
+            width: 100%;
+            max-width: 800px;
+            background: var(--panel-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+        }
+
+        .case-roller {
+            width: 100%;
+            height: 140px;
+            background: rgba(0,0,0,0.6);
+            border: 2px solid var(--cyan-dark);
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            margin: 30px 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .roller-track {
+            display: flex;
+            gap: 20px;
+            position: absolute;
+            left: 0;
+            transition: left 4s cubic-bezier(0.15, 0.85, 0.35, 1);
+        }
+
+        .roller-item {
+            min-width: 120px;
+            height: 100px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+        }
+        .roller-item img { width: 70px; height: auto; margin-bottom: 5px; }
+        .roller-item span { font-size: 0.75rem; color: #a0aabf; }
+
+        .case-pointer {
+            position: absolute;
+            top: 0; bottom: 0; left: 50%;
+            width: 4px;
+            background: var(--cyan-glow);
+            transform: translateX(-50%);
+            z-index: 5;
+            box-shadow: 0 0 10px var(--cyan-glow);
+        }
+
+        /* --- FEATURES & MARKET --- */
+        .features { flex-direction: column; }
+        .section-header { text-align: center; margin-bottom: 60px; }
+        .section-header h2 { font-size: 3rem; text-shadow: 0 0 20px rgba(0, 229, 255, 0.3); }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            max-width: 1400px;
+            width: 100%;
+        }
+
+        .card {
+            background: var(--panel-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 35px;
+            border-radius: 16px;
+            transition: all 0.4s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            border-color: var(--cyan-glow);
+            box-shadow: 0 20px 40px rgba(0, 229, 255, 0.15);
+        }
+
+        .card-icon { font-size: 2.2rem; color: var(--cyan-glow); margin-bottom: 20px; }
+        .card h3 { font-size: 1.4rem; margin-bottom: 12px; }
+        .card p { color: #a0aabf; line-height: 1.6; font-size: 0.95rem; }
+
+        .market-board {
+            width: 100%;
+            max-width: 900px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 30px;
+        }
+
+        .trade-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        .trade-row:last-child { border: none; }
+        .trade-item { font-weight: 700; font-size: 1.1rem; display: flex; align-items: center; gap: 12px; }
+        .trade-value { color: var(--cyan-glow); font-family: monospace; font-size: 1.3rem; text-shadow: 0 0 10px rgba(0, 229, 255, 0.4); }
+
+        footer {
+            padding: 30px 5%;
+            background: #010204;
+            text-align: center;
+            color: #556075;
+            font-size: 0.85rem;
+            border-top: 1px solid rgba(255,255,255,0.03);
+        }
+
+        /* Fade-in animation class */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .fade-in.visible { opacity: 1; transform: translateY(0); }
+    </style>
+</head>
+<body>
+
+    <div class="fog-container"></div>
+    <canvas id="backgroundCanvas"></canvas>
+    <canvas id="cursorCanvas"></canvas>
+
+    <div class="wrapper">
+        <!-- HERO & WEAPON SHOWCASE -->
+        <section class="hero" id="home">
+            <div class="hero-content">
+                <div class="subtitle">MM2 Fan Platform</div>
+                <h1 class="title">Shadows &<br>Artifacts</h1>
+                <div class="glass-panel">
+                    <p id="weaponDesc">Wield the legendary scythe forged in the deepest shadows. Explore updated MM2 trading values, spin virtual cases, and master the meta with live tracking.</p>
+                </div>
+                <div class="btn-group">
+                    <a href="#cases" class="btn btn-primary">Open Case</a>
+                    <a href="#market" class="btn btn-secondary">Market Values</a>
+                </div>
+            </div>
+
+            <div class="hero-visual">
+                <div class="weapon-container">
+                    <div class="blue-fire"></div>
+                    <img id="activeWeaponImg" src="e26af68824c3a35bd18ef33ae70d899e.png" alt="Weapon" class="weapon-image">
+                </div>
+                <div class="weapon-info-tag">
+                    <h3 id="weaponName">Batwing Scythe</h3>
+                    <span id="weaponValue">Value: 1,250 (Ancient)</span>
+                </div>
+                <div class="weapon-selectors">
+                    <div class="weapon-dot active" onclick="switchWeapon(0)"></div>
+                    <div class="weapon-dot" onclick="switchWeapon(1)"></div>
+                    <div class="weapon-dot" onclick="switchWeapon(2)"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CASE OPENER MINI-GAME -->
+        <section class="cases-section" id="cases">
+            <div class="section-header">
+                <h2>Virtual Case Simulator</h2>
+            </div>
+            <div class="case-box fade-in">
+                <p style="color: #a0aabf; margin-bottom: 10px;">Test your luck and unlock high-tier items instantly!</p>
+                
+                <div class="case-roller">
+                    <div class="case-pointer"></div>
+                    <div class="roller-track" id="rollerTrack">
+                        <!-- Items generated via JS -->
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" id="spinBtn" onclick="startSpin()">Spin Case (Free)</button>
+                <p id="spinResult" style="margin-top: 15px; font-weight: bold; color: var(--cyan-glow); min-height: 24px;"></p>
+            </div>
+        </section>
+
+        <!-- FEATURES -->
+        <section class="features" id="features">
+            <div class="section-header">
+                <h2>Platform Features</h2>
+            </div>
+            <div class="cards-grid">
+                <div class="card fade-in">
+                    <div class="card-icon">👁️</div>
+                    <h3>Sheriff's Vision</h3>
+                    <p>Track the murderer with enhanced analytical tools, custom map guides, and survival routes.</p>
+                </div>
+                <div class="card fade-in" style="transition-delay: 0.1s;">
+                    <div class="card-icon">⚔️</div>
+                    <h3>Godly Arsenal</h3>
+                    <p>Inspect high-resolution 3D models and aura parameters of every rare item released.</p>
+                </div>
+                <div class="card fade-in" style="transition-delay: 0.2s;">
+                    <div class="card-icon">⚖️</div>
+                    <h3>Fair Trading</h3>
+                    <p>Utilize algorithmic value calculators to ensure absolute safety during user exchanges.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- MARKET TRENDS -->
+        <section class="market" id="market">
+            <div class="section-header">
+                <h2>Live Market Values</h2>
+            </div>
+            <div class="market-board fade-in">
+                <div class="trade-row">
+                    <div class="trade-item">🦇 Batwing</div>
+                    <div class="trade-value">1,250 Value</div>
+                </div>
+                <div class="trade-row">
+                    <div class="trade-item">🔥 Chromafire</div>
+                    <div class="trade-value">980 Value</div>
+                </div>
+                <div class="trade-row">
+                    <div class="trade-item">❄️ Icebreaker</div>
+                    <div class="trade-value">850 Value</div>
+                </div>
+                <div class="trade-row">
+                    <div class="trade-item">🌌 Darkbringer</div>
+                    <div class="trade-value">720 Value</div>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>© 2026 MM2 Fan Platform. Not affiliated with Roblox Corporation.</p>
+        </footer>
+    </div>
+
+    <script>
+        // --- 1. Parallax & Mouse Tracking ---
+        const body = document.body;
+        const windowWidth = window.innerWidth;
+        const windowHeight = window.innerHeight;
+
+        document.addEventListener('mousemove', (e) => {
+            const mouseX = e.clientX - windowWidth / 2;
+            const mouseY = e.clientY - windowHeight / 2;
+            body.style.setProperty('--mx', `${mouseX}px`);
+            body.style.setProperty('--my', `${mouseY}px`);
+        });
+
+        // --- 2. Weapon Showcase Data & Logic ---
+        const weapons = [
+            {
+                name: "Batwing Scythe",
+                value: "Value: 1,250 (Ancient)",
+                desc: "Wield the legendary scythe forged in the deepest shadows. Powered by an eternal cyan flame aura.",
+                img: "e26af68824c3a35bd18ef33ae70d899e.png"
+            },
+            {
+                name: "Chromafire Blade",
+                value: "Value: 980 (Godly Chroma)",
+                desc: "A shifting multicolor masterpiece that adapts its glow dynamically based on your movement speed.",
+                img: "e26af68824c3a35bd18ef33ae70d899e.png" // Fallback to same image if missing, user can swap asset paths
+            },
+            {
+                name: "Icebreaker Axe",
+                value: "Value: 850 (Godly)",
+                desc: "Carved from an ancient glacier. Emits freezing mist particles and razor-sharp cyan reflections.",
+                img: "e26af68824c3a35bd18ef33ae70d899e.png"
+            }
+        ];
+
+        function switchWeapon(index) {
+            const w = weapons[index];
+            const imgEl = document.getElementById('activeWeaponImg');
+            
+            imgEl.style.opacity = 0;
+            setTimeout(() => {
+                document.getElementById('weaponName').innerText = w.name;
+                document.getElementById('weaponValue').innerText = w.value;
+                document.getElementById('weaponDesc').innerText = w.desc;
+                imgEl.src = w.img;
+                imgEl.style.opacity = 1;
+            }, 200);
+
+            document.querySelectorAll('.weapon-dot').forEach((dot, i) => {
+                dot.classList.toggle('active', i === index);
+            });
+        }
+
+        // --- 3. Case Opener Simulator Logic ---
+        const rollerTrack = document.getElementById('rollerTrack');
+        const spinBtn = document.getElementById('spinBtn');
+        const spinResult = document.getElementById('spinResult');
+
+        const pool = [
+            { name: "Batwing", type: "Ancient" },
+            { name: "Chromafire", type: "Godly" },
+            { name: "Icebreaker", type: "Godly" },
+            { name: "Common Knife", type: "Common" },
+            { name: "Common Gun", type: "Common" },
+            { name: "Darkbringer", type: "Godly" },
+            { name: "Seer", type: "Legendary" }
+        ];
+
+        function initRoller() {
+            rollerTrack.innerHTML = '';
+            // Generate 40 items for the rolling effect
+            for (let i = 0; i < 40; i++) {
+                const itemData = pool[Math.floor(Math.random() * pool.length)];
+                const div = document.createElement('div');
+                div.className = 'roller-item';
+                div.innerHTML = `
+                    <span style="font-weight:bold; font-size:0.8rem;">${itemData.name}</span>
+                    <span style="color:var(--cyan-glow);">${itemData.type}</span>
+                `;
+                rollerTrack.appendChild(div);
+            }
+            rollerTrack.style.left = '0px';
+        }
+        initRoller();
+
+        let isSpinning = false;
+        function startSpin() {
+            if (isSpinning) return;
+            isSpinning = true;
+            spinBtn.disabled = true;
+            spinResult.innerText = "Spinning...";
+            initRoller();
+
+            // Calculate random stop position around item index 25-30
+            const itemWidth = 140; // 120px min-width + 20px gap approx
+            const targetIndex = 28;
+            const randomOffset = (Math.random() - 0.5) * 80;
+            const finalPosition = -(targetIndex * itemWidth - 350 + randomOffset);
+
+            rollerTrack.style.transition = 'left 4s cubic-bezier(0.15, 0.85, 0.35, 1)';
+            rollerTrack.style.left = `${finalPosition}px`;
+
+            setTimeout(() => {
+                isSpinning = false;
+                spinBtn.disabled = false;
+                spinResult.innerText = "🎉 Congratulations! You won a High-Tier Weapon!";
+            }, 4100);
+        }
+
+        // --- 4. Intersection Observer for Scroll Animations ---
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('visible');
+            });
+        }, { threshold: 0.15 });
+
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+        // --- 5. Background Dust Particles ---
+        const bgCanvas = document.getElementById('backgroundCanvas');
+        const bgCtx = bgCanvas.getContext('2d');
+        bgCanvas.width = window.innerWidth;
+        bgCanvas.height = window.innerHeight;
+
+        let bgParticles = [];
+        for (let i = 0; i < 40; i++) {
+            bgParticles.push({
+                x: Math.random() * bgCanvas.width,
+                y: Math.random() * bgCanvas.height,
+                size: Math.random() * 2 + 0.5,
+                speed: (Math.random() - 0.5) * 0.4 - 0.2,
+                opacity: Math.random() * 0.4 + 0.1
+            });
+        }
+
+        function animateBg() {
+            bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+            bgParticles.forEach(p => {
+                p.y += p.speed;
+                if (p.y < 0) p.y = bgCanvas.height;
+                bgCtx.fillStyle = `rgba(0, 229, 255, ${p.opacity})`;
+                bgCtx.beginPath();
+                bgCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                bgCtx.fill();
+            });
+            requestAnimationFrame(animateBg);
+        }
+        animateBg();
+
+        // --- 6. White Sparks Cursor Particles ---
+        const cursorCanvas = document.getElementById('cursorCanvas');
+        const cCtx = cursorCanvas.getContext('2d');
+        cursorCanvas.width = window.innerWidth;
+        cursorCanvas.height = window.innerHeight;
+
+        let cursorParticles = [];
+        window.addEventListener('mousemove', (e) => {
+            for(let i = 0; i < 2; i++) {
+                cursorParticles.push({
+                    x: e.clientX,
+                    y: e.clientY,
+                    size: Math.random() * 3 + 1,
+                    speedX: (Math.random() - 0.5) * 2,
+                    speedY: (Math.random() - 0.5) * 2,
+                    life: 1,
+                    decay: Math.random() * 0.03 + 0.02
+                });
+            }
+        });
+
+        function animateCursor() {
+            cCtx.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
+            for (let i = 0; i < cursorParticles.length; i++) {
+                let p = cursorParticles[i];
+                p.x += p.speedX;
+                p.y += p.speedY;
+                p.life -= p.decay;
+                p.size *= 0.94;
+
+                cCtx.fillStyle = `rgba(255, 255, 255, ${p.life})`;
+                cCtx.beginPath();
+                cCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                cCtx.shadowBlur = 8;
+                cCtx.shadowColor = "#ffffff";
+                cCtx.fill();
+
+                if (p.life <= 0 || p.size <= 0.2) {
+                    cursorParticles.splice(i, 1);
+                    i--;
+                }
+            }
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
+
+        window.addEventListener('resize', () => {
+            bgCanvas.width = window.innerWidth;
+            bgCanvas.height = window.innerHeight;
+            cursorCanvas.width = window.innerWidth;
+            cursorCanvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+</html>
