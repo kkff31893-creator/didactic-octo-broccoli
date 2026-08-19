@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AURA VOID PRO // Ультимативные аудиофильские наушники нового поколения</title>
+  <meta name="description" content="Беспроводные наушники AURA VOID PRO: гибридный ANC -45дБ, 40мм бериллиевые драйверы, пространственный звук 360° и до 65 часов автономности в премиальном дизайне.">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="theme-obsidian">
+
+  <!-- Ambient Background Glows -->
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+  <div class="ambient-glow glow-3"></div>
+  <div class="noise-overlay"></div>
+  
+  <!-- Custom Glowing Cursor -->
+  <div class="cursor-dot" id="cursorDot"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <!-- Navigation -->
+  <header class="navbar-wrapper">
+    <nav class="navbar glass-card">
+      <a href="#" class="brand-logo">
+        <div class="logo-symbol">
+          <span class="logo-dot"></span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-name">AURA</span>
+          <span class="brand-sub">VOID PRO</span>
+        </div>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="#engineering" class="nav-item">Инженерия</a></li>
+        <li><a href="#editions" class="nav-item">Серии</a></li>
+        <li><a href="#anc-demo" class="nav-item">ANC Демо</a></li>
+        <li><a href="#soundstage" class="nav-item">360° Аудио</a></li>
+        <li><a href="#studio-eq" class="nav-item">EQ Студия</a></li>
+        <li><a href="#specs" class="nav-item">Характеристики</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <button class="sound-quick-toggle" id="quickAudioToggle" title="Тест звука" aria-label="Звуковой тест">
+          <span class="audio-toggle-icon-wrap">
+            <i data-lucide="volume-2" class="audio-icon-idle"></i>
+            <span class="sound-wave-bars">
+              <span></span><span></span><span></span><span></span>
+            </span>
+          </span>
+          <span class="nav-audio-label" id="navAudioLabel">Тест звука ▶</span>
+        </button>
+        <button class="btn btn-glow open-cart-btn" id="openCartBtn">
+          <span>Предзаказ</span>
+          <i data-lucide="arrow-up-right"></i>
+        </button>
+        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Меню">
+          <i data-lucide="menu"></i>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Mobile Drawer -->
+  <div class="mobile-drawer" id="mobileDrawer">
+    <div class="drawer-header">
+      <span class="brand-name">AURA VOID</span>
+      <button class="close-drawer-btn" id="closeDrawerBtn"><i data-lucide="x"></i></button>
+    </div>
+    <ul class="mobile-nav-links">
+      <li><a href="#about" class="mobile-nav-link">Особенности</a></li>
+      <li><a href="#engineering" class="mobile-nav-link">Инженерия</a></li>
+      <li><a href="#anc-demo" class="mobile-nav-link">ANC Шумоподавление</a></li>
+      <li><a href="#soundstage" class="mobile-nav-link">Пространственный 360° Звук</a></li>
+      <li><a href="#studio-eq" class="mobile-nav-link">Студийный Эквалайзер</a></li>
+      <li><a href="#specs" class="mobile-nav-link">Технические данные</a></li>
+    </ul>
+    <div class="mobile-drawer-cta">
+      <button class="btn btn-primary btn-full open-cart-btn">Заказать AURA VOID PRO</button>
+    </div>
+  </div>
+
+  <main>
+    <!-- HERO SECTION -->
+    <section class="hero-section" id="hero">
+      <div class="hero-container">
+        
+        <div class="hero-badge reveal-fade">
+          <span class="badge-dot"></span>
+          <span class="badge-text">Флагманский релиз 2026 // Spatial Titan Edition</span>
+        </div>
+
+        <h1 class="hero-title reveal-fade">
+          ЧИСТАЯ АКУСТИКА <br>
+          <span class="gradient-text">ВНЕ ГРАНИЦ ЗВУКА</span>
+        </h1>
+
+        <p class="hero-subtitle reveal-fade">
+          Погрузитесь в абсолютный вакуум тишины и студийное воспроизведение 96 кГц / 24-бит с адаптивным шумоподавлением нового поколения VoidShield™ ANC.
+        </p>
+
+        <!-- Interactive 3D Product Canvas & Showcase Display -->
+        <div class="hero-showcase reveal-scale">
+          <div class="showcase-glow-ring"></div>
+          
+          <!-- Product Interactive Graphic Visual -->
+          <div class="headphone-visual-stage" id="headphoneStage">
+            <div class="headphone-3d-model" id="headphone3d">
+              
+              <!-- High-resolution Headphone Images with Smooth Cross-fade Switching -->
+              <div class="headphone-art-wrapper">
+                <div class="headphone-photo-container">
+                  <img src="images/headphone_obsidian.jpg" alt="AURA VOID PRO Obsidian Void" class="headphone-photo-img active" id="headphoneImgObsidian">
+                  <img src="images/headphone_cyber.jpg" alt="AURA VOID PRO Cyber Neon" class="headphone-photo-img" id="headphoneImgCyber">
+                  <img src="images/headphone_titanium.jpg" alt="AURA VOID PRO Dark Titanium" class="headphone-photo-img titanium-filter" id="headphoneImgTitanium">
+                  <div class="headphone-ambient-ring"></div>
+                  <div class="headphone-reflection-shadow"></div>
+                </div>
+              </div>
+
+              <!-- Floating Hotspot Pulse Badges -->
+              <div class="hotspot hotspot-driver" style="top: 58%; left: 45%;">
+                <div class="hotspot-trigger"><span></span></div>
+                <div class="hotspot-tooltip">
+                  <strong>40мм Beryllium Driver</strong>
+                  <p>Ультралегкая бериллиевая мембрана с откликом 4 Гц – 48 кГц</p>
+                </div>
+              </div>
+
+              <div class="hotspot hotspot-anc" style="top: 24%; right: 28%;">
+                <div class="hotspot-trigger"><span></span></div>
+                <div class="hotspot-tooltip">
+                  <strong>VoidShield™ Hybrid ANC</strong>
+                  <p>4 микрофона с двойным процессором тишины -45 дБ</p>
+                </div>
+              </div>
+
+              <div class="hotspot hotspot-battery" style="top: 80%; left: 24%;">
+                <div class="hotspot-trigger"><span></span></div>
+                <div class="hotspot-tooltip">
+                  <strong>65 Часов Автономности</strong>
+                  <p>15 минут быстрой зарядки = 8 часов музыки</p>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Realtime Audio Wave Canvas Behind Headphone -->
+            <canvas id="heroVisualizerCanvas" class="hero-canvas"></canvas>
+          </div>
+
+          <!-- Color Edition Switcher Bar -->
+          <div class="edition-selector-bar glass-card">
+            <span class="edition-label">Лимитированная серия:</span>
+            <div class="edition-options">
+              <button class="color-btn active" data-edition="obsidian" title="Obsidian Purple">
+                <span class="swatch" style="background: linear-gradient(135deg, #090514, #8b5cf6);"></span>
+                <span class="name">Obsidian Void</span>
+              </button>
+              <button class="color-btn" data-edition="cyber" title="Cyber Neon Magenta">
+                <span class="swatch" style="background: linear-gradient(135deg, #180922, #d946ef);"></span>
+                <span class="name">Cyber Neon</span>
+              </button>
+              <button class="color-btn" data-edition="titanium" title="Titanium Amethyst">
+                <span class="swatch" style="background: linear-gradient(135deg, #374151, #a855f7);"></span>
+                <span class="name">Dark Titanium</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Quick Action Buttons -->
+        <div class="hero-cta-group reveal-fade">
+          <button class="btn btn-primary btn-lg open-cart-btn">
+            <i data-lucide="shopping-bag"></i>
+            <span>Оформить предзаказ — 34 990 ₽</span>
+          </button>
+          <button class="btn btn-secondary btn-lg hero-audio-btn" id="heroAudioTestBtn">
+            <div class="audio-btn-glow-pulse"></div>
+            <i data-lucide="volume-2" id="heroAudioIcon"></i>
+            <span id="heroAudioText">Включить тест звука ▶</span>
+            <span class="audio-hint-pill">Кликните для теста</span>
+          </button>
+        </div>
+
+        <!-- Quick Key Stats Grid -->
+        <div class="hero-stats-grid reveal-fade">
+          <div class="stat-card glass-card">
+            <div class="stat-icon"><i data-lucide="shield-alert"></i></div>
+            <div class="stat-value">-45<span class="unit">дБ</span></div>
+            <div class="stat-desc">Глубина активного ANC</div>
+          </div>
+          <div class="stat-card glass-card">
+            <div class="stat-icon"><i data-lucide="battery-charging"></i></div>
+            <div class="stat-value">65<span class="unit">ч</span></div>
+            <div class="stat-desc">Время работы без подзарядки</div>
+          </div>
+          <div class="stat-card glass-card">
+            <div class="stat-icon"><i data-lucide="activity"></i></div>
+            <div class="stat-value">96<span class="unit">кГц</span></div>
+            <div class="stat-desc">24-бит Hi-Res LDAC / Lossless</div>
+          </div>
+          <div class="stat-card glass-card">
+            <div class="stat-icon"><i data-lucide="zap"></i></div>
+            <div class="stat-value">18<span class="unit">мс</span></div>
+            <div class="stat-desc">Ultra-Low Latency Gaming</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- RUNNING TICKER -->
+    <div class="tech-ticker">
+      <div class="ticker-track">
+        <span>HI-RES AUDIO WIRELESS</span>
+        <span class="ticker-dot">✦</span>
+        <span>HYBRID ACTIVE NOISE CANCELLATION</span>
+        <span class="ticker-dot">✦</span>
+        <span>BERYLLIUM 40MM TRANSDUCERS</span>
+        <span class="ticker-dot">✦</span>
+        <span>360° SPATIAL SOUND ENGINE</span>
+        <span class="ticker-dot">✦</span>
+        <span>BLUETOOTH 5.4 LE AUDIO</span>
+        <span class="ticker-dot">✦</span>
+        <span>AEROSPACE-GRADE MEMORY FOAM</span>
+        <span class="ticker-dot">✦</span>
+        <span>CUSTOM TITANIUM GIMBAL</span>
+        <span class="ticker-dot">✦</span>
+      </div>
+    </div>
+
+    <!-- FEATURES & ENGINEERING HIGHLIGHTS -->
+    <section class="section engineering-section" id="engineering">
+      <div class="container">
+        
+        <div class="section-head text-center">
+          <div class="section-tag">Инженерия совершенства</div>
+          <h2 class="section-title">Каждый микрон спроектирован <br><span class="gradient-text">для идеального звучания</span></h2>
+          <p class="section-desc">Слияние авиационных сплавов, нанокомпозитных мембран и нейропроцессорного управления акустикой.</p>
+        </div>
+
+        <div class="engineering-grid">
+          
+          <!-- Card 1 -->
+          <div class="eng-card glass-card">
+            <div class="eng-card-glow"></div>
+            <div class="eng-icon-box">
+              <i data-lucide="disc-3"></i>
+            </div>
+            <h3>40-мм Бериллиевая диафрагма</h3>
+            <p>В 5 раз жестче титана и в 2 раза легче алюминия. Устраняет малейшие паразитные резонансы, гарантируя кристальную детализацию каждого обертона струнных и электронных синтезаторов.</p>
+            <div class="eng-micro-spec">
+              <span>Диапазон: <strong>4 Гц — 48 000 Гц</strong></span>
+              <span>Искажения: <strong>THD &lt; 0.05%</strong></span>
+            </div>
+          </div>
+
+          <!-- Card 2 -->
+          <div class="eng-card glass-card">
+            <div class="eng-card-glow"></div>
+            <div class="eng-icon-box">
+              <i data-lucide="cpu"></i>
+            </div>
+            <h3>Двойной чип VoidCore DSP</h3>
+            <p>Нейронный процессор анализирует акустическое пространство ушной раковины 48 000 раз в секунду и калибрует эквалайзер в реальном времени под анатомическую форму вашей головы.</p>
+            <div class="eng-micro-spec">
+              <span>Семплирование: <strong>48kHz Neural Loop</strong></span>
+              <span>Задержка DSP: <strong>0.2 мс</strong></span>
+            </div>
+          </div>
+
+          <!-- Card 3 -->
+          <div class="eng-card glass-card">
+            <div class="eng-card-glow"></div>
+            <div class="eng-icon-box">
+              <i data-lucide="feather"></i>
+            </div>
+            <h3>Акустический комфорт CloudFit™</h3>
+            <p>Амбушюры из гипоаллергенной перфорированной протеиновой кожи с эффектом памяти и охлаждающим термогелем снижают давление на голову на 42%.</p>
+            <div class="eng-micro-spec">
+              <span>Масса: <strong>248 грамм</strong></span>
+              <span>Прижимная сила: <strong>3.8 N</strong></span>
+            </div>
+          </div>
+
+          <!-- Card 4 -->
+          <div class="eng-card glass-card">
+            <div class="eng-card-glow"></div>
+            <div class="eng-icon-box">
+              <i data-lucide="radio"></i>
+            </div>
+            <h3>Lossless Кодеки & Multipoint</h3>
+            <p>Поддержка новейших протоколов Sony LDAC, aptX Lossless, AAC и LC3. Бесшовное мгновенное переключение между ноутбуком, смартфоном и планшетом без задержек.</p>
+            <div class="eng-micro-spec">
+              <span>Битрейт: <strong>до 990 кбит/с</strong></span>
+              <span>Связь: <strong>2 устройства сразу</strong></span>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- EDITIONS & GALLERY SHOWCASE -->
+    <section class="section gallery-section" id="editions">
+      <div class="container">
+        
+        <div class="section-head text-center">
+          <div class="section-tag"><i data-lucide="palette"></i> Лимитированные серии</div>
+          <h2 class="section-title">Три характера. <br><span class="gradient-text">Один бескомпромиссный звук.</span></h2>
+          <p class="section-desc">Выберите исполнение, которое отражает ваш индивидуальный визуальный стиль.</p>
+        </div>
+
+        <div class="editions-grid">
+          
+          <!-- Edition 1: Obsidian Void -->
+          <div class="edition-card glass-card" data-edition-target="obsidian">
+            <div class="edition-card-badge">Bestseller</div>
+            <div class="edition-img-box">
+              <img src="images/headphone_obsidian.jpg" alt="Obsidian Void Edition" class="edition-thumb-img">
+              <div class="edition-glow-orb glow-purple"></div>
+            </div>
+            <div class="edition-card-content">
+              <div class="edition-color-tag"><span class="swatch-dot dot-obsidian"></span> Obsidian Void</div>
+              <h3>Глубокий обсидиан & Неоновый фиолет</h3>
+              <p>Матовое антибликовое покрытие, темная сталь и мягкая фиолетовая подсветка ореола.</p>
+              <div class="edition-card-footer">
+                <span class="edition-price">34 990 ₽</span>
+                <button class="btn btn-glow select-edition-btn" data-edition="obsidian">Выбрать серию</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Edition 2: Cyber Neon -->
+          <div class="edition-card glass-card" data-edition-target="cyber">
+            <div class="edition-card-badge neon-badge">Special Cyber</div>
+            <div class="edition-img-box">
+              <img src="images/headphone_cyber.jpg" alt="Cyber Neon Edition" class="edition-thumb-img">
+              <div class="edition-glow-orb glow-magenta"></div>
+            </div>
+            <div class="edition-card-content">
+              <div class="edition-color-tag"><span class="swatch-dot dot-cyber"></span> Cyber Neon</div>
+              <h3>Темный графит & Magenta Glow</h3>
+              <p>Агрессивный киберпанк-стиль, карбоновые вставки и яркое свечение кольца управления.</p>
+              <div class="edition-card-footer">
+                <span class="edition-price">34 990 ₽</span>
+                <button class="btn btn-glow select-edition-btn" data-edition="cyber">Выбрать серию</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Edition 3: Dark Titanium -->
+          <div class="edition-card glass-card" data-edition-target="titanium">
+            <div class="edition-card-badge">Titanium Alloy</div>
+            <div class="edition-img-box">
+              <img src="images/headphone_titanium.jpg" alt="Dark Titanium Edition" class="edition-thumb-img titanium-filter">
+              <div class="edition-glow-orb glow-titanium"></div>
+            </div>
+            <div class="edition-card-content">
+              <div class="edition-color-tag"><span class="swatch-dot dot-titanium"></span> Dark Titanium</div>
+              <h3>Шлифованный титан & Аметист</h3>
+              <p>Авиационный титановый сплав высокой прочности с благородным холодным отливом.</p>
+              <div class="edition-card-footer">
+                <span class="edition-price">36 990 ₽</span>
+                <button class="btn btn-glow select-edition-btn" data-edition="titanium">Выбрать серию</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- INTERACTIVE ANC NOISE CANCELLATION SIMULATOR -->
+    <section class="section anc-section" id="anc-demo">
+      <div class="container">
+        
+        <div class="anc-interactive-box glass-card">
+          <div class="anc-left-content">
+            <div class="section-tag"><i data-lucide="shield-check"></i> Интерактивная лаборатория</div>
+            <h2 class="anc-title">Абсолютная тишина <br><span class="gradient-text">в один свайп</span></h2>
+            <p class="anc-desc">
+              Перетащите регулятор шумоподавления и переключайте звуковые окружения, чтобы в реальном времени оценить фильтрацию частот алгоритмом VoidShield™.
+            </p>
+
+            <div class="anc-audio-status-banner">
+              <button class="btn btn-glow btn-sm" id="ancAudioToggleBtn">
+                <i data-lucide="volume-2" id="ancAudioIcon"></i>
+                <span id="ancAudioToggleText">Включить звук теста ANC ▶</span>
+              </button>
+              <span class="anc-hint-note"><span class="pulse-dot"></span> Звук меняется при смене окружения</span>
+            </div>
+
+            <div class="environment-selector">
+              <span class="env-label">Среда окружения:</span>
+              <div class="env-buttons">
+                <button class="env-btn active" data-env="metro">
+                  <i data-lucide="train"></i>
+                  <span>Метро / Шум поезда</span>
+                </button>
+                <button class="env-btn" data-env="flight">
+                  <i data-lucide="plane"></i>
+                  <span>Турбины самолета</span>
+                </button>
+                <button class="env-btn" data-env="cafe">
+                  <i data-lucide="coffee"></i>
+                  <span>Шумное кафе</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="anc-slider-wrapper">
+              <div class="slider-labels">
+                <span>Прозрачность (0%)</span>
+                <span class="current-anc-level" id="ancLevelText">VoidShield ANC 100% (-45 dB)</span>
+                <span>Полный вакуум (100%)</span>
+              </div>
+              <input type="range" min="0" max="100" value="100" class="custom-slider" id="ancRangeSlider">
+              <div class="anc-modes-badges">
+                <button class="mode-chip" data-val="0">Прозрачный режим</button>
+                <button class="mode-chip" data-val="50">Адаптивный офис</button>
+                <button class="mode-chip active" data-val="100">Глубокий Вакуум</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="anc-right-visual">
+            <div class="spectrum-visualizer-container">
+              <div class="spectrum-header">
+                <span class="spectrum-live-tag"><span class="pulse-dot"></span> LIVE SPECTRUM ANALYZER</span>
+                <span class="decibel-counter" id="decibelDisplay">-45.2 dB REDUCTION</span>
+              </div>
+              <canvas id="ancSpectrumCanvas" class="spectrum-canvas"></canvas>
+              
+              <div class="anc-status-card">
+                <div class="status-row">
+                  <span class="status-title">Низкие частоты (20-250 Гц)</span>
+                  <div class="status-bar"><div class="bar-fill" id="lowFreqBar" style="width: 98%;"></div></div>
+                  <span class="status-pct" id="lowFreqPct">-45dB</span>
+                </div>
+                <div class="status-row">
+                  <span class="status-title">Речь и гул (250-2000 Гц)</span>
+                  <div class="status-bar"><div class="bar-fill" id="midFreqBar" style="width: 92%;"></div></div>
+                  <span class="status-pct" id="midFreqPct">-39dB</span>
+                </div>
+                <div class="status-row">
+                  <span class="status-title">Высокий свист (2-8 кГц)</span>
+                  <div class="status-bar"><div class="bar-fill" id="highFreqBar" style="width: 85%;"></div></div>
+                  <span class="status-pct" id="highFreqPct">-32dB</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 360 SPATIAL AUDIO INTERACTIVE STAGE -->
+    <section class="section spatial-section" id="soundstage">
+      <div class="container">
+        
+        <div class="section-head text-center">
+          <div class="section-tag">Пространственный звук 360°</div>
+          <h2 class="section-title">Кинематографический звук, <br><span class="gradient-text">движущийся вокруг вас</span></h2>
+          <p class="section-desc">Интерактивный симулятор HRTF (Head-Related Transfer Function). Перетаскивайте источник звука мышью вокруг слушателя.</p>
+        </div>
+
+        <div class="spatial-interactive-arena glass-card">
+          
+          <div class="soundstage-radar" id="soundstageRadar">
+            <!-- Central Listener Avatar -->
+            <div class="listener-node">
+              <div class="listener-pulse"></div>
+              <i data-lucide="headphones"></i>
+              <span class="listener-text">ВЫ</span>
+            </div>
+
+            <!-- Orbit Rings -->
+            <div class="orbit-ring ring-1"></div>
+            <div class="orbit-ring ring-2"></div>
+            <div class="orbit-ring ring-3"></div>
+
+            <!-- Compass Axes -->
+            <div class="compass-line axis-x"></div>
+            <div class="compass-line axis-y"></div>
+
+            <!-- Draggable Sound Emitter Object -->
+            <div class="sound-emitter" id="soundEmitter">
+              <div class="emitter-glow"></div>
+              <i data-lucide="music"></i>
+              <span class="emitter-label">Источник звука</span>
+            </div>
+          </div>
+
+          <div class="soundstage-controls">
+            <div class="spatial-info-box">
+              <h3>Параметры ориентации:</h3>
+              <div class="spatial-readouts">
+                <div class="readout-item">
+                  <span class="lbl">Азимут:</span>
+                  <span class="val" id="spatialAzimuth">45° (Справа-спереди)</span>
+                </div>
+                <div class="readout-item">
+                  <span class="lbl">Дистанция:</span>
+                  <span class="val" id="spatialDistance">1.8 м</span>
+                </div>
+                <div class="readout-item">
+                  <span class="lbl">Режим гироскопа:</span>
+                  <span class="val highlight">Динамический трекинг головы</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="spatial-presets">
+              <span class="preset-label">Акустические пространства:</span>
+              <div class="preset-grid">
+                <button class="spatial-preset-btn active" data-preset="concert">
+                  <i data-lucide="radio"></i>
+                  <span>Симфонический зал</span>
+                </button>
+                <button class="spatial-preset-btn" data-preset="cinema">
+                  <i data-lucide="film"></i>
+                  <span>IMAX Кинотеатр</span>
+                </button>
+                <button class="spatial-preset-btn" data-preset="studio">
+                  <i data-lucide="mic-2"></i>
+                  <span>Сухая Студия</span>
+                </button>
+                <button class="spatial-preset-btn" data-preset="cyberclub">
+                  <i data-lucide="sparkles"></i>
+                  <span>Cyber Club</span>
+                </button>
+              </div>
+            </div>
+
+            <button class="btn btn-secondary btn-full" id="autoRotateSpatialBtn">
+              <i data-lucide="refresh-cw"></i>
+              <span>Запустить авто-вращение звука 360°</span>
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- INTERACTIVE STUDIO EQUALIZER -->
+    <section class="section eq-section" id="studio-eq">
+      <div class="container">
+        
+        <div class="section-head text-center">
+          <div class="section-tag">Кастомная настройка</div>
+          <h2 class="section-title">Студийный 5-полосный <br><span class="gradient-text">Параметрический EQ</span></h2>
+          <p class="section-desc">Настройте идеальный звуковой профиль под ваш любимый жанр или выберите профессиональный пресет.</p>
+        </div>
+
+        <div class="eq-workbench glass-card">
+          
+          <!-- EQ Preset Tabs -->
+          <div class="eq-tabs">
+            <button class="eq-tab-btn active" data-preset="bass">Deep Sub-Bass</button>
+            <button class="eq-tab-btn" data-preset="vocal">Vocal Pure</button>
+            <button class="eq-tab-btn" data-preset="flat">Audiophile Studio Flat</button>
+            <button class="eq-tab-btn" data-preset="synth">Cyberwave EDM</button>
+            <button class="eq-tab-btn" data-preset="podcast">Speech & Podcast</button>
+          </div>
+
+          <!-- EQ Curve Graphic Canvas -->
+          <div class="eq-canvas-container">
+            <canvas id="eqCurveCanvas" class="eq-curve-canvas"></canvas>
+          </div>
+
+          <!-- 5 Draggable Frequency Bands -->
+          <div class="eq-sliders-row">
+            
+            <div class="eq-band-col">
+              <div class="band-gain-val" id="gainVal0">+6.0 dB</div>
+              <div class="vertical-slider-track">
+                <input type="range" min="-12" max="12" value="6" step="0.5" class="v-slider" id="eqBand0" orient="vertical">
+              </div>
+              <div class="band-freq-label">60 Hz</div>
+              <div class="band-type">Sub Bass</div>
+            </div>
+
+            <div class="eq-band-col">
+              <div class="band-gain-val" id="gainVal1">+3.5 dB</div>
+              <div class="vertical-slider-track">
+                <input type="range" min="-12" max="12" value="3.5" step="0.5" class="v-slider" id="eqBand1" orient="vertical">
+              </div>
+              <div class="band-freq-label">250 Hz</div>
+              <div class="band-type">Bass Punch</div>
+            </div>
+
+            <div class="eq-band-col">
+              <div class="band-gain-val" id="gainVal2">-1.0 dB</div>
+              <div class="vertical-slider-track">
+                <input type="range" min="-12" max="12" value="-1" step="0.5" class="v-slider" id="eqBand2" orient="vertical">
+              </div>
+              <div class="band-freq-label">1 kHz</div>
+              <div class="band-type">Mid Body</div>
+            </div>
+
+            <div class="eq-band-col">
+              <div class="band-gain-val" id="gainVal3">+2.5 dB</div>
+              <div class="vertical-slider-track">
+                <input type="range" min="-12" max="12" value="2.5" step="0.5" class="v-slider" id="eqBand3" orient="vertical">
+              </div>
+              <div class="band-freq-label">4 kHz</div>
+              <div class="band-type">Presence</div>
+            </div>
+
+            <div class="eq-band-col">
+              <div class="band-gain-val" id="gainVal4">+5.0 dB</div>
+              <div class="vertical-slider-track">
+                <input type="range" min="-12" max="12" value="5" step="0.5" class="v-slider" id="eqBand4" orient="vertical">
+              </div>
+              <div class="band-freq-label">16 kHz</div>
+              <div class="band-type">Air Sparkle</div>
+            </div>
+
+          </div>
+
+          <div class="eq-footer-actions">
+            <div class="eq-profile-status">
+              <i data-lucide="check-circle-2"></i>
+              <span>Профиль сохранен во внутреннюю флеш-память наушников</span>
+            </div>
+            <button class="btn btn-secondary" id="resetEqBtn">
+              <i data-lucide="rotate-ccw"></i>
+              <span>Сбросить в Flat (0 dB)</span>
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- TECHNICAL SPECIFICATION TABLE -->
+    <section class="section specs-section" id="specs">
+      <div class="container">
+        
+        <div class="section-head text-center">
+          <div class="section-tag">Полные спецификации</div>
+          <h2 class="section-title">Бескомпромиссные <br><span class="gradient-text">цифры и технологии</span></h2>
+          <p class="section-desc">Сравните AURA VOID PRO с типичными премиум-моделями рынка.</p>
+        </div>
+
+        <div class="specs-table-wrapper glass-card">
+          <table class="specs-table">
+            <thead>
+              <tr>
+                <th>Характеристика</th>
+                <th class="highlight-col">AURA VOID PRO</th>
+                <th>Обычные флагманы</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Тип излучателя</strong></td>
+                <td class="highlight-col"><span class="spec-highlight">40мм Бериллиевый купол с неодимом N52</span></td>
+                <td>40мм Обычный майлар / бумага</td>
+              </tr>
+              <tr>
+                <td><strong>Частотный диапазон</strong></td>
+                <td class="highlight-col"><span class="spec-highlight">4 Гц — 48 000 Гц</span></td>
+                <td>20 Гц — 20 000 Гц</td>
+              </tr>
+              <tr>
+                <td><strong>Глубина ANC</strong></td>
+                <td class="highlight-col"><span class="spec-highlight">-45 дБ (Адаптивный гибридный 4-ядерный)</span></td>
+                <td>-30...-35 дБ</td>
+              </tr>
+              <tr>
+                <td><strong>Автономность работы</strong></td>
+                <td class="highlight-col"><span class="spec-highlight">До 65 часов (50 ч с активным ANC)</span></td>
+                <td>28 — 35 часов</td>
+              </tr>
+              <tr>
+                <td><strong>Кодеки Bluetooth</strong></td>
+                <td class="highlight-col"><span class="spec-highlight">LDAC (990kbps), aptX Lossless, AAC, LC3, SBC</span></td>
+                <td>SBC, AAC</td>
+              </tr>
+              <tr>
+                <td><strong>Пространственное аудио</strong></td>
+                <td class="highlight-col"><span class="spec-highlight">Встроенный 6-осевой гироскоп + 3D HRTF DSP</span></td>
+                <td>Только программная эмуляция</td>
+              </tr>
+              <tr>
+                <td><strong>Микрофонная система</strong></td>
+                <td class="highlight-col"><span class="spec-highlight">6 MEMS микрофонов с ИИ шумоподавлением ветра</span></td>
+                <td>2-4 базовых микрофона</td>
+              </tr>
+              <tr>
+                <td><strong>Вес и материалы</strong></td>
+                <td class="highlight-col"><span class="spec-highlight">248 г (Анодированный титан, пена памяти)</span></td>
+                <td>280+ г (Пластик)</td>
+              </tr>
+              <tr>
+                <td><strong>Разъемы подключения</strong></td>
+                <td class="highlight-col"><span class="spec-highlight">USB-C Hi-Res Audio DAC + 3.5mm Jack</span></td>
+                <td>Только 3.5мм без встроенного DAC</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- REVIEWS & AWARDS CAROUSEL -->
+    <section class="section reviews-section" id="reviews">
+      <div class="container">
+        
+        <div class="section-head text-center">
+          <div class="section-tag">Признание экспертов</div>
+          <h2 class="section-title">Что говорят <br><span class="gradient-text">ведущие аудиофилы</span></h2>
+        </div>
+
+        <div class="reviews-grid">
+          
+          <div class="review-card glass-card">
+            <div class="review-stars">
+              <i data-lucide="star" class="star-filled"></i>
+              <i data-lucide="star" class="star-filled"></i>
+              <i data-lucide="star" class="star-filled"></i>
+              <i data-lucide="star" class="star-filled"></i>
+              <i data-lucide="star" class="star-filled"></i>
+            </div>
+            <p class="review-quote">«AURA VOID PRO полностью стирает грань между беспроводным удобством и бескомпромиссным проводным студийным мониторингом. Невероятная сцена.»</p>
+            <div class="reviewer-meta">
+              <div class="reviewer-avatar">AV</div>
+              <div class="reviewer-info">
+                <h4>Алексей Волков</h4>
+                <span>Главный редактор Sound & Studio Journal</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="review-card glass-card">
+            <div class="review-stars">
+              <i data-lucide="star" class="star-filled"></i>
+              <i data-lucide="star" class="star-filled"></i>
+              <i data-lucide="star" class="star-filled"></i>
+              <i data-lucide="star" class="star-filled"></i>
+              <i data-lucide="star" class="star-filled"></i>
+            </div>
+            <p class="review-quote">«Шумоподавление настолько глубокое, что в переполненном метро создается ощущение, будто поезд растворился в вакууме. А бериллиевый бас — это чистый экстаз.»</p>
+            <div class="reviewer-meta">
+              <div class="reviewer-avatar">ДМ</div>
+              <div class="reviewer-info">
+                <h4>Дмитрий Морозов</h4>
+                <span>Музыкальный продюсер, Grammy Nominee</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="review-card glass-card">
+            <div class="review-stars">
+              <i data-lucide="star" class="star-filled"></i>
+              <i data-lucide="star" class="star-filled"></i>
+              <i data-lucide="star" class="star-filled"></i>
+              <i data-lucide="star" class="star-filled"></i>
+              <i data-lucide="star" class="star-filled"></i>
+            </div>
+            <p class="review-quote">«65 часов реальной работы и вес всего 248 грамм. Можно носить весь рабочий день и не чувствовать усталости. Лучший релиз года без сомнений.»</p>
+            <div class="reviewer-meta">
+              <div class="reviewer-avatar">ЕС</div>
+              <div class="reviewer-info">
+                <h4>Елена Смирнова</h4>
+                <span>Ведущий звукорежиссер CinemaLab</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- FAQ SECTION -->
+    <section class="section faq-section" id="faq">
+      <div class="container">
+        
+        <div class="section-head text-center">
+          <div class="section-tag">Вопросы и ответы</div>
+          <h2 class="section-title">Часто задаваемые <br><span class="gradient-text">вопросы</span></h2>
+        </div>
+
+        <div class="faq-accordion">
+          
+          <div class="faq-item glass-card">
+            <div class="faq-header">
+              <h3>Как работает гарантия и предзаказ?</h3>
+              <i data-lucide="chevron-down" class="faq-icon"></i>
+            </div>
+            <div class="faq-body">
+              <p>На каждую пару AURA VOID PRO распространяется официальная международная премиум-гарантия 3 года с момента получения. При предзаказе доставка бесплатна по всей стране с возможностью примерки.</p>
+            </div>
+          </div>
+
+          <div class="faq-item glass-card">
+            <div class="faq-header">
+              <h3>Совместимы ли наушники с iPhone, Android, Mac и PC?</h3>
+              <i data-lucide="chevron-down" class="faq-icon"></i>
+            </div>
+            <div class="faq-body">
+              <p>Да, AURA VOID PRO поддерживают универсальные протоколы Bluetooth 5.4 LE, AAC для iOS/macOS и LDAC / aptX Lossless для Android и Windows, а также проводное подключение через USB-C (24-bit/96kHz) и стандартный 3.5мм аудиоразъем.</p>
+            </div>
+          </div>
+
+          <div class="faq-item glass-card">
+            <div class="faq-header">
+              <h3>Что входит в премиальный комплект поставки?</h3>
+              <i data-lucide="chevron-down" class="faq-icon"></i>
+            </div>
+            <div class="faq-body">
+              <p>В комплекте: наушники AURA VOID PRO, жесткий кейс из баллистического карбона на магнитной застежке, кабель USB-C/USB-C с золотым напылением, кабель 3.5мм Aux, переходник для самолета 6.35мм и сертификат подлинности.</p>
+            </div>
+          </div>
+
+          <div class="faq-item glass-card">
+            <div class="faq-header">
+              <h3>Можно ли отключить подсветку?</h3>
+              <i data-lucide="chevron-down" class="faq-icon"></i>
+            </div>
+            <div class="faq-body">
+              <p>Да, неоновые кольцевые индикаторы можно настроить, приглушить или полностью отключить через фирменное мобильное приложение AURA Core или двойным нажатием боковой сенсорной панели.</p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- PRE-ORDER CTA BANNER -->
+    <section class="section cta-section">
+      <div class="container">
+        
+        <div class="cta-banner glass-card">
+          <div class="cta-content">
+            <div class="section-tag"><i data-lucide="sparkles"></i> Лимитированная первая партия</div>
+            <h2 class="cta-title">Готовы услышать звук, <br><span class="gradient-text">которого не слышали раньше?</span></h2>
+            <p class="cta-text">Оформите предзаказ сегодня и получите бесплатный карбоновый кейс и 3 года премиального сервиса.</p>
+            
+            <div class="cta-actions">
+              <button class="btn btn-primary btn-lg open-cart-btn">
+                <i data-lucide="zap"></i>
+                <span>Забронировать за 34 990 ₽</span>
+              </button>
+              <div class="stock-badge">
+                <span class="pulse-dot"></span>
+                <span>Осталось 42 шт. из первой партии</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <div class="brand-logo">
+            <div class="logo-symbol">
+              <span class="logo-dot"></span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/>
+              </svg>
+            </div>
+            <span class="brand-name">AURA ACOUSTICS</span>
+          </div>
+          <p class="footer-tagline">Инновационные аудиотехнологии высшего класса. Переосмысливая границы человеческого восприятия звука.</p>
+        </div>
+
+        <div class="footer-links-group">
+          <h4>Навигация</h4>
+          <ul>
+            <li><a href="#about">О наушниках</a></li>
+            <li><a href="#engineering">Технологии</a></li>
+            <li><a href="#anc-demo">ANC Лаборатория</a></li>
+            <li><a href="#soundstage">360° Аудио</a></li>
+            <li><a href="#specs">Спецификации</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links-group">
+          <h4>Поддержка</h4>
+          <ul>
+            <li><a href="#faq">Гарантия и сервис</a></li>
+            <li><a href="#faq">Доставка и возврат</a></li>
+            <li><a href="#faq">Сертификация Hi-Res</a></li>
+            <li><a href="#faq">AURA Core App</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-newsletter">
+          <h4>Будьте в курсе релизов</h4>
+          <p>Получайте эксклюзивные приглашения на тест-драйвы и обновления прошивки.</p>
+          <form class="newsletter-form" id="newsletterForm" onsubmit="return false;">
+            <input type="email" placeholder="Ваш e-mail" required class="glass-input">
+            <button type="submit" class="btn btn-glow"><i data-lucide="arrow-right"></i></button>
+          </form>
+          <div class="newsletter-msg" id="newsletterMsg"></div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>© 2026 AURA Acoustics Inc. Все права защищены. Разработано в премиальном стиле Black & Purple.</p>
+        <div class="footer-socials">
+          <a href="#" class="social-icon"><i data-lucide="disc"></i></a>
+          <a href="#" class="social-icon"><i data-lucide="youtube"></i></a>
+          <a href="#" class="social-icon"><i data-lucide="twitter"></i></a>
+          <a href="#" class="social-icon"><i data-lucide="instagram"></i></a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- PRE-ORDER / CART SLIDE-IN MODAL -->
+  <div class="cart-drawer-backdrop" id="cartBackdrop"></div>
+  <div class="cart-drawer" id="cartDrawer">
+    <div class="cart-drawer-header">
+      <div class="cart-title-row">
+        <i data-lucide="shopping-bag"></i>
+        <h3>Оформление предзаказа</h3>
+      </div>
+      <button class="cart-close-btn" id="closeCartBtn"><i data-lucide="x"></i></button>
+    </div>
+
+    <div class="cart-drawer-body">
+      <!-- Item summary card -->
+      <div class="cart-product-card glass-card">
+        <div class="cart-prod-thumb">
+          <div class="mini-headphone-preview" id="cartThumbnail">
+            <img src="images/headphone_obsidian.jpg" alt="AURA VOID PRO" id="cartThumbImg" class="cart-thumb-img">
+          </div>
+        </div>
+        <div class="cart-prod-details">
+          <h4 id="cartItemName">AURA VOID PRO</h4>
+          <span class="cart-prod-variant" id="cartItemVariant">Цвет: Obsidian Void (Black/Purple)</span>
+          <div class="cart-prod-price">34 990 ₽ <span class="old-price">42 990 ₽</span></div>
+        </div>
+      </div>
+
+      <!-- Add-on options -->
+      <div class="cart-addons-section">
+        <h4>Дополнительные аксессуары:</h4>
+        
+        <label class="addon-item glass-card">
+          <input type="checkbox" class="addon-checkbox" data-price="4990" id="addonStand">
+          <div class="addon-info">
+            <span class="addon-name">Алюминиевая RGB стойка AURA Beam</span>
+            <span class="addon-price">+4 990 ₽</span>
+          </div>
+        </label>
+
+        <label class="addon-item glass-card">
+          <input type="checkbox" class="addon-checkbox" data-price="2990" id="addonCable">
+          <div class="addon-info">
+            <span class="addon-name">Посеребренный кабель 4.4mm Pentaconn</span>
+            <span class="addon-price">+2 990 ₽</span>
+          </div>
+        </label>
+      </div>
+
+      <!-- Customer details form -->
+      <form class="checkout-form" id="checkoutForm" onsubmit="return false;">
+        <h4>Данные получателя:</h4>
+        <input type="text" placeholder="Ваше имя" required class="glass-input">
+        <input type="tel" placeholder="Номер телефона (+7...)" required class="glass-input">
+        <input type="text" placeholder="Город доставки" required class="glass-input">
+      </form>
+
+      <!-- Price calculation -->
+      <div class="cart-total-box">
+        <div class="total-line">
+          <span>Сумма:</span>
+          <span id="subtotalPrice">34 990 ₽</span>
+        </div>
+        <div class="total-line">
+          <span>Экспресс-доставка:</span>
+          <span class="free-badge">Бесплатно</span>
+        </div>
+        <div class="total-line grand-total">
+          <span>Итого к оплате:</span>
+          <span id="grandTotalPrice" class="highlight-total">34 990 ₽</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cart-drawer-footer">
+      <button class="btn btn-primary btn-full btn-lg" id="submitOrderBtn">
+        <i data-lucide="lock"></i>
+        <span>Подтвердить предзаказ</span>
+      </button>
+      <p class="safe-checkout-note"><i data-lucide="shield-check"></i> Защищенная оплата и 30 дней на возврат без условий</p>
+    </div>
+  </div>
+
+  <!-- Order Success Notification Toast -->
+  <div class="toast-notification" id="toastNotif">
+    <i data-lucide="check-circle" class="toast-icon"></i>
+    <div class="toast-content">
+      <strong>Предзаказ успешно оформлен!</strong>
+      <p>Менеджер AURA свяжется с вами в течение 10 минут.</p>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/visualizer.js"></script>
+  <script src="js/model3d.js"></script>
+  <script src="js/app.js"></script>
+  
+  <script>
+    // Initialize Lucide icons
+    lucide.createIcons();
+  </script>
+</body>
+</html>
