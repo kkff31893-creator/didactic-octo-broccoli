@@ -1,0 +1,2621 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#0b1015" />
+  <title>CS2 Mobile WebGL Prototype</title>
+  <style>
+    :root {
+      --bg:#080c11;
+      --panel:rgba(17,24,31,.76);
+      --panel2:rgba(12,17,23,.9);
+      --line:rgba(255,255,255,.12);
+      --line2:rgba(255,171,64,.28);
+      --text:#f4f7fa;
+      --muted:#9aa8b5;
+      --accent:#ff9b27;
+      --accent2:#ffd08a;
+      --good:#66d17a;
+      --danger:#ff5b62;
+      --blue:#6fb5ff;
+      --shadow:0 18px 70px rgba(0,0,0,.38);
+      --blur:blur(18px) saturate(130%);
+      --safe-t:max(10px, env(safe-area-inset-top));
+      --safe-r:max(10px, env(safe-area-inset-right));
+      --safe-b:max(10px, env(safe-area-inset-bottom));
+      --safe-l:max(10px, env(safe-area-inset-left));
+    }
+
+    * {
+      box-sizing:border-box;
+      -webkit-tap-highlight-color:transparent;
+      -webkit-touch-callout:none;
+      user-select:none;
+    }
+
+    html, body {
+      width:100%;
+      height:100%;
+      margin:0;
+      overflow:hidden;
+      overscroll-behavior:none;
+      touch-action:manipulation;
+      background:var(--bg);
+      color:var(--text);
+      font-family:Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
+    }
+
+    button, input {
+      font:inherit;
+    }
+
+    button {
+      appearance:none;
+      border:0;
+      color:inherit;
+      cursor:pointer;
+      touch-action:manipulation;
+      pointer-events:auto;
+    }
+
+    #app {
+      position:fixed;
+      inset:0;
+      overflow:hidden;
+      background:
+        radial-gradient(900px 500px at 88% -10%, rgba(255,151,31,.16), transparent 60%),
+        radial-gradient(700px 500px at 0% 90%, rgba(37,85,130,.15), transparent 60%),
+        linear-gradient(135deg, #080c10 0%, #10161d 55%, #080b10 100%);
+    }
+
+    .screen {
+      position:absolute;
+      inset:0;
+      display:none;
+    }
+
+    .screen.active {
+      display:block;
+    }
+
+    /* Native-link fallback: navigation still works when a preview blocks JavaScript. */
+    #menuScreen:target,
+    #casesScreen:target,
+    #inventoryScreen:target,
+    #gameScreen:target {
+      display:block !important;
+      z-index:80;
+    }
+
+    body:has(#casesScreen:target) #menuScreen.active,
+    body:has(#inventoryScreen:target) #menuScreen.active,
+    body:has(#gameScreen:target) #menuScreen.active {
+      display:none;
+    }
+
+    .screen:not(#gameScreen) {
+      overflow-y:auto;
+      overflow-x:hidden;
+      -webkit-overflow-scrolling:touch;
+      overscroll-behavior-y:contain;
+      touch-action:pan-y;
+    }
+
+    .glass {
+      background:linear-gradient(180deg, rgba(29,37,46,.76), rgba(15,21,28,.72));
+      border:1px solid var(--line);
+      box-shadow:var(--shadow), inset 0 1px 0 rgba(255,255,255,.05);
+      -webkit-backdrop-filter:var(--blur);
+      backdrop-filter:var(--blur);
+    }
+
+    .topbar {
+      position:absolute;
+      top:var(--safe-t);
+      left:var(--safe-l);
+      right:var(--safe-r);
+      height:58px;
+      border-radius:18px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 16px;
+      z-index:5;
+    }
+
+    .brand {
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-weight:900;
+      letter-spacing:.12em;
+      font-size:14px;
+    }
+
+    .brandMark {
+      width:28px;
+      height:28px;
+      border-radius:8px;
+      background:linear-gradient(135deg,var(--accent2),var(--accent));
+      box-shadow:0 0 28px rgba(255,155,39,.32);
+      position:relative;
+      overflow:hidden;
+    }
+
+    .brandMark:after {
+      content:"";
+      position:absolute;
+      width:21px;
+      height:4px;
+      top:12px;
+      left:4px;
+      background:#14181e;
+      transform:rotate(-22deg);
+      border-radius:6px;
+    }
+
+    .credits {
+      display:flex;
+      align-items:center;
+      gap:8px;
+      color:var(--accent2);
+      font-weight:800;
+    }
+
+    .creditIcon {
+      width:18px;
+      height:18px;
+      border-radius:50%;
+      background:radial-gradient(circle at 35% 35%, #ffe4b6, #ff9f2e 55%, #a65000 100%);
+      box-shadow:0 0 12px rgba(255,156,39,.25);
+    }
+
+    #menuScreen {
+      background:
+        linear-gradient(90deg, rgba(6,9,12,.88) 0%, rgba(6,9,12,.58) 42%, rgba(6,9,12,.22) 100%),
+        radial-gradient(900px 520px at 77% 53%, rgba(255,146,27,.08), transparent 70%);
+    }
+
+    .menuScene {
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      overflow:hidden;
+    }
+
+    .menuGrid {
+      position:absolute;
+      inset:0;
+      opacity:.22;
+      background-image:
+        linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+      background-size:52px 52px;
+      transform:perspective(700px) rotateX(56deg) translateY(38%);
+      transform-origin:bottom center;
+      mask-image:linear-gradient(to top, black, transparent 75%);
+    }
+
+    .menuWeapon {
+      position:absolute;
+      right:5%;
+      top:23%;
+      width:min(48vw, 610px);
+      height:28vw;
+      max-height:330px;
+      min-height:180px;
+      filter:drop-shadow(0 42px 42px rgba(0,0,0,.55));
+      opacity:.95;
+      transform:rotate(-6deg);
+    }
+
+    .rifle {
+      position:absolute;
+      left:5%;
+      top:34%;
+      width:76%;
+      height:18%;
+      border-radius:16px 8px 7px 12px;
+      background:linear-gradient(180deg,#525b61,#22292f 52%,#11161a);
+      border:1px solid rgba(255,255,255,.13);
+      box-shadow:inset 0 0 0 2px rgba(0,0,0,.25);
+    }
+
+    .rifle:before {
+      content:"";
+      position:absolute;
+      right:-26%;
+      top:30%;
+      width:32%;
+      height:28%;
+      border-radius:0 8px 8px 0;
+      background:linear-gradient(180deg,#394147,#151a1e);
+    }
+
+    .rifle:after {
+      content:"";
+      position:absolute;
+      left:52%;
+      bottom:-155%;
+      width:18%;
+      height:175%;
+      border-radius:6px 6px 22px 18px;
+      background:linear-gradient(90deg,#13171a,#2e3539 40%,#151a1d);
+      transform:skewX(-10deg) rotate(-2deg);
+      transform-origin:top;
+    }
+
+    .stock {
+      position:absolute;
+      left:-8%;
+      top:27%;
+      width:23%;
+      height:35%;
+      clip-path:polygon(0 24%, 85% 0, 100% 45%, 62% 100%, 7% 82%);
+      background:linear-gradient(135deg,#342115,#17120f);
+      border:1px solid rgba(255,167,69,.14);
+    }
+
+    .grip {
+      position:absolute;
+      left:23%;
+      top:48%;
+      width:11%;
+      height:42%;
+      background:linear-gradient(135deg,#51301b,#18120e);
+      clip-path:polygon(20% 0,100% 10%,72% 100%,0 88%);
+    }
+
+    .glowLine {
+      position:absolute;
+      left:8%;
+      right:2%;
+      top:44%;
+      height:2px;
+      background:linear-gradient(90deg,transparent,var(--accent),transparent);
+      box-shadow:0 0 18px rgba(255,155,39,.35);
+      opacity:.5;
+    }
+
+    .menuPanel {
+      position:absolute;
+      left:max(28px, calc(var(--safe-l) + 18px));
+      top:50%;
+      transform:translateY(-45%);
+      width:min(370px, 46vw);
+      z-index:3;
+    }
+
+    .eyebrow {
+      font-size:11px;
+      letter-spacing:.2em;
+      color:var(--accent2);
+      font-weight:800;
+      text-transform:uppercase;
+      margin-bottom:8px;
+    }
+
+    .heroTitle {
+      margin:0 0 8px;
+      font-weight:950;
+      font-size:clamp(36px, 6vw, 80px);
+      line-height:.88;
+      letter-spacing:-.055em;
+      text-transform:uppercase;
+      text-shadow:0 12px 34px rgba(0,0,0,.4);
+    }
+
+    .heroSub {
+      margin:0 0 20px;
+      color:var(--muted);
+      font-size:13px;
+      max-width:320px;
+      line-height:1.4;
+    }
+
+    .menuButtons {
+      position:relative;
+      z-index:60;
+      pointer-events:auto;
+      display:grid;
+      gap:10px;
+      width:min(320px, 100%);
+    }
+
+    .menuBtn,
+    .smallBtn {
+      position:relative;
+      z-index:61;
+      pointer-events:auto !important;
+      touch-action:auto !important;
+      text-decoration:none;
+      color:inherit;
+      border:1px solid var(--line);
+      background:rgba(22,29,36,.72);
+      -webkit-backdrop-filter:blur(14px);
+      backdrop-filter:blur(14px);
+      min-height:52px;
+      border-radius:14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 16px;
+      font-weight:850;
+      letter-spacing:.02em;
+      box-shadow:0 12px 32px rgba(0,0,0,.22);
+    }
+
+    .menuBtn.primary {
+      background:linear-gradient(135deg,#ffab3d,#ff8217);
+      color:#17120c;
+      border-color:rgba(255,204,137,.8);
+      box-shadow:0 14px 34px rgba(255,130,23,.18), inset 0 1px 0 rgba(255,255,255,.35);
+    }
+
+    .menuBtn .tag {
+      color:var(--muted);
+      font-size:11px;
+      font-weight:700;
+    }
+
+    .menuBtn.primary .tag {
+      color:rgba(30,20,7,.58);
+    }
+
+    .version {
+      position:absolute;
+      right:calc(var(--safe-r) + 8px);
+      bottom:calc(var(--safe-b) + 4px);
+      color:rgba(255,255,255,.36);
+      font-size:10px;
+      letter-spacing:.12em;
+      z-index:2;
+    }
+
+    .panelScreen {
+      min-height:100%;
+      padding:
+        calc(var(--safe-t) + 78px)
+        calc(var(--safe-r) + 18px)
+        calc(var(--safe-b) + 16px)
+        calc(var(--safe-l) + 18px);
+      background:
+        radial-gradient(600px 320px at 80% 0%, rgba(255,149,26,.12), transparent 70%),
+        linear-gradient(135deg,#0b1015,#111922 60%,#0a0f14);
+    }
+
+    .screenTitle {
+      margin:0;
+      font-size:clamp(24px,4vw,42px);
+      letter-spacing:-.04em;
+    }
+
+    .subline {
+      color:var(--muted);
+      font-size:12px;
+      margin-top:4px;
+    }
+
+    .caseLayout {
+      display:grid;
+      grid-template-columns:minmax(200px,.38fr) 1fr;
+      gap:14px;
+      height:100%;
+    }
+
+    .caseInfo {
+      border-radius:20px;
+      padding:18px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      min-width:0;
+    }
+
+    .caseBox {
+      width:min(180px, 70%);
+      aspect-ratio:1.15;
+      margin:10px auto 8px;
+      position:relative;
+      transform:perspective(420px) rotateX(9deg) rotateY(-12deg);
+    }
+
+    .caseBody {
+      position:absolute;
+      inset:15% 7% 3%;
+      border-radius:18px 18px 13px 13px;
+      background:linear-gradient(145deg,#39434b,#14191e 48%,#0d1115);
+      border:1px solid rgba(255,255,255,.15);
+      box-shadow:0 30px 30px rgba(0,0,0,.35), inset 0 0 0 2px rgba(0,0,0,.28);
+    }
+
+    .caseBody:before {
+      content:"";
+      position:absolute;
+      width:48%;
+      height:18%;
+      top:24%;
+      left:26%;
+      border-radius:7px;
+      background:linear-gradient(180deg,#ffb647,#ff8318);
+      box-shadow:0 0 24px rgba(255,140,23,.25);
+    }
+
+    .caseHandle {
+      position:absolute;
+      left:32%;
+      top:0;
+      width:36%;
+      height:24%;
+      border:10px solid #333c43;
+      border-bottom:0;
+      border-radius:12px 12px 0 0;
+    }
+
+    .casePrice {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      color:var(--muted);
+      font-size:12px;
+      margin-bottom:10px;
+    }
+
+    .openBtn {
+      width:100%;
+      min-height:48px;
+      border-radius:13px;
+      background:linear-gradient(135deg,#ffb64d,#ff861c);
+      color:#17120c;
+      font-weight:900;
+      box-shadow:0 12px 28px rgba(255,137,25,.18);
+    }
+
+    .openBtn:disabled {
+      opacity:.48;
+    }
+
+    .rouletteWrap {
+      min-width:0;
+      border-radius:20px;
+      padding:14px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .rouletteHeader {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:8px;
+    }
+
+    .rouletteViewport {
+      position:absolute;
+      left:14px;
+      right:14px;
+      bottom:14px;
+      top:60px;
+      overflow-x:auto;
+      overflow-y:hidden;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.09);
+      background:rgba(6,9,12,.55);
+      touch-action:pan-x;
+      scrollbar-width:none;
+    }
+
+    .rouletteViewport::-webkit-scrollbar {
+      display:none;
+    }
+
+    .rouletteStrip {
+      height:100%;
+      display:flex;
+      align-items:stretch;
+      width:max-content;
+      padding:10px calc(50% - 72px);
+      gap:8px;
+    }
+
+    .rouletteMarker {
+      position:absolute;
+      z-index:4;
+      width:2px;
+      top:60px;
+      bottom:14px;
+      left:50%;
+      background:linear-gradient(180deg,transparent,#ffb748 20%,#ff8b1f 80%,transparent);
+      box-shadow:0 0 14px rgba(255,139,31,.8);
+      pointer-events:none;
+    }
+
+    .skinCard {
+      flex:0 0 144px;
+      min-height:112px;
+      border-radius:13px;
+      border:1px solid rgba(255,255,255,.1);
+      background:linear-gradient(180deg,rgba(33,40,48,.9),rgba(15,20,25,.92));
+      padding:10px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .skinCard:before {
+      content:"";
+      position:absolute;
+      inset:0;
+      background:radial-gradient(220px 80px at 50% 0%, var(--rarityGlow, rgba(255,255,255,.07)), transparent 70%);
+      pointer-events:none;
+    }
+
+    .skinIcon {
+      height:52px;
+      position:relative;
+      display:grid;
+      place-items:center;
+    }
+
+    .miniGun {
+      width:82px;
+      height:12px;
+      background:linear-gradient(180deg,#c2c9ce,#50585f);
+      border-radius:6px 3px 3px 5px;
+      transform:rotate(-8deg);
+      filter:drop-shadow(0 8px 10px rgba(0,0,0,.45));
+      position:relative;
+    }
+
+    .miniGun:after {
+      content:"";
+      position:absolute;
+      left:44px;
+      top:9px;
+      width:14px;
+      height:26px;
+      background:#343b40;
+      clip-path:polygon(0 0,100% 0,82% 100%,22% 88%);
+    }
+
+    .skinName {
+      font-size:11px;
+      font-weight:850;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .skinWeapon {
+      font-size:9px;
+      color:var(--muted);
+      margin-top:2px;
+    }
+
+    .inventoryGrid {
+      position:absolute;
+      left:calc(var(--safe-l) + 18px);
+      right:calc(var(--safe-r) + 18px);
+      top:calc(var(--safe-t) + 78px);
+      bottom:calc(var(--safe-b) + 16px);
+      display:grid;
+      grid-template-columns:repeat(4, minmax(0, 1fr));
+      gap:10px;
+      overflow-y:auto;
+      overflow-x:hidden;
+      -webkit-overflow-scrolling:touch;
+      overscroll-behavior-y:contain;
+      touch-action:pan-y;
+      padding-bottom:24px;
+    }
+
+    .invCard {
+      min-height:130px;
+      border-radius:16px;
+      padding:11px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      border:1px solid rgba(255,255,255,.1);
+      background:linear-gradient(180deg,rgba(30,38,46,.76),rgba(13,18,23,.88));
+      -webkit-backdrop-filter:blur(12px);
+      backdrop-filter:blur(12px);
+      position:relative;
+      overflow:hidden;
+    }
+
+    .invCard.equipped {
+      border-color:rgba(255,158,44,.62);
+      box-shadow:inset 0 0 0 1px rgba(255,158,44,.22),0 0 24px rgba(255,137,25,.08);
+    }
+
+    .equipBtn {
+      width:100%;
+      border-radius:10px;
+      height:31px;
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.1);
+      font-size:10px;
+      font-weight:800;
+    }
+
+    .invCard.equipped .equipBtn {
+      background:linear-gradient(135deg,#ffb64d,#ff851c);
+      color:#17120c;
+    }
+
+    #gameScreen {
+      background:#101214;
+    }
+
+    #gameCanvas {
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      display:block;
+      touch-action:none;
+    }
+
+    .hud {
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      padding:var(--safe-t) var(--safe-r) var(--safe-b) var(--safe-l);
+      overflow:hidden;
+    }
+
+    .hudPanel {
+      background:linear-gradient(180deg,rgba(11,16,20,.56),rgba(11,16,20,.38));
+      border:1px solid rgba(255,255,255,.1);
+      -webkit-backdrop-filter:blur(9px);
+      backdrop-filter:blur(9px);
+      box-shadow:0 10px 28px rgba(0,0,0,.25);
+    }
+
+    .healthPanel {
+      position:absolute;
+      left:calc(var(--safe-l) + 12px);
+      bottom:calc(var(--safe-b) + 12px);
+      width:140px;
+      border-radius:14px;
+      padding:10px 12px;
+    }
+
+    .healthTop {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      font-weight:900;
+      font-size:11px;
+    }
+
+    .hpBar {
+      height:4px;
+      margin-top:6px;
+      border-radius:99px;
+      overflow:hidden;
+      background:rgba(255,255,255,.1);
+    }
+
+    .hpFill {
+      width:100%;
+      height:100%;
+      background:linear-gradient(90deg,#59ce73,#b7f365);
+      transition:width .15s ease;
+    }
+
+    .ammoPanel {
+      position:absolute;
+      right:calc(var(--safe-r) + 12px);
+      bottom:calc(var(--safe-b) + 12px);
+      min-width:116px;
+      text-align:right;
+      border-radius:14px;
+      padding:9px 12px;
+    }
+
+    .ammoMain {
+      font-size:24px;
+      font-weight:950;
+      letter-spacing:-.04em;
+    }
+
+    .ammoReserve {
+      font-size:11px;
+      color:var(--muted);
+    }
+
+    .weaponLabel {
+      font-size:9px;
+      letter-spacing:.1em;
+      color:var(--accent2);
+      text-transform:uppercase;
+      margin-top:2px;
+    }
+
+    .radar {
+      position:absolute;
+      top:calc(var(--safe-t) + 12px);
+      left:calc(var(--safe-l) + 12px);
+      width:96px;
+      height:96px;
+      border-radius:50%;
+      overflow:hidden;
+      background:
+        linear-gradient(90deg,transparent 49.5%,rgba(255,255,255,.08) 50%,transparent 50.5%),
+        linear-gradient(transparent 49.5%,rgba(255,255,255,.08) 50%,transparent 50.5%),
+        radial-gradient(circle,rgba(24,33,38,.62) 0 65%,rgba(7,10,13,.72) 66%);
+      border:1px solid rgba(255,255,255,.14);
+      -webkit-backdrop-filter:blur(8px);
+      backdrop-filter:blur(8px);
+    }
+
+    .radar:after {
+      content:"";
+      position:absolute;
+      left:50%;
+      top:50%;
+      width:4px;
+      height:4px;
+      border-radius:50%;
+      background:var(--blue);
+      transform:translate(-50%,-50%);
+      box-shadow:0 0 7px rgba(111,181,255,.65);
+    }
+
+    .radarDot {
+      position:absolute;
+      width:5px;
+      height:5px;
+      border-radius:50%;
+      background:var(--danger);
+      box-shadow:0 0 7px rgba(255,91,98,.7);
+      transform:translate(-50%,-50%);
+    }
+
+    .killfeed {
+      position:absolute;
+      right:calc(var(--safe-r) + 12px);
+      top:calc(var(--safe-t) + 12px);
+      display:grid;
+      gap:5px;
+      width:min(290px, 38vw);
+    }
+
+    .killLine {
+      justify-self:end;
+      padding:6px 8px;
+      border-radius:9px;
+      background:rgba(4,7,10,.46);
+      -webkit-backdrop-filter:blur(8px);
+      backdrop-filter:blur(8px);
+      border:1px solid rgba(255,255,255,.07);
+      font-size:9px;
+      animation:feedIn .2s ease both;
+    }
+
+    .killLine b {
+      color:var(--accent2);
+    }
+
+    @keyframes feedIn {
+      from { opacity:0; transform:translateX(8px); }
+      to { opacity:1; transform:none; }
+    }
+
+    .crosshair {
+      --gap:7px;
+      --len:7px;
+      position:absolute;
+      left:50%;
+      top:50%;
+      width:1px;
+      height:1px;
+      transform:translate(-50%,-50%);
+      filter:drop-shadow(0 0 2px rgba(0,0,0,.9));
+    }
+
+    .crosshair i {
+      position:absolute;
+      display:block;
+      background:rgba(245,248,250,.95);
+      border-radius:3px;
+    }
+
+    .crosshair .l { width:var(--len); height:2px; right:var(--gap); top:-1px; }
+    .crosshair .r { width:var(--len); height:2px; left:var(--gap); top:-1px; }
+    .crosshair .t { width:2px; height:var(--len); left:-1px; bottom:var(--gap); }
+    .crosshair .b { width:2px; height:var(--len); left:-1px; top:var(--gap); }
+
+    .scopeOverlay {
+      position:absolute;
+      inset:0;
+      display:none;
+      background:
+        linear-gradient(90deg, transparent calc(50% - .5px), rgba(0,0,0,.75) 50%, transparent calc(50% + .5px)),
+        linear-gradient(transparent calc(50% - .5px), rgba(0,0,0,.75) 50%, transparent calc(50% + .5px)),
+        radial-gradient(circle at center, transparent 0 36%, rgba(0,0,0,.95) 36.4% 100%);
+    }
+
+    .scopeOverlay.active {
+      display:block;
+    }
+
+    .scopeOverlay:after {
+      content:"";
+      position:absolute;
+      left:50%;
+      top:50%;
+      width:72%;
+      aspect-ratio:1;
+      border-radius:50%;
+      border:1px solid rgba(255,255,255,.25);
+      transform:translate(-50%,-50%);
+    }
+
+    .pauseBtn {
+      position:absolute;
+      left:50%;
+      top:calc(var(--safe-t) + 10px);
+      transform:translateX(-50%);
+      width:42px;
+      height:32px;
+      border-radius:11px;
+      display:grid;
+      place-items:center;
+      pointer-events:auto;
+      background:rgba(10,14,18,.52);
+      border:1px solid rgba(255,255,255,.1);
+      -webkit-backdrop-filter:blur(8px);
+      backdrop-filter:blur(8px);
+      font-size:13px;
+      font-weight:900;
+    }
+
+    .touchLayer {
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+    }
+
+    .lookZone {
+      position:absolute;
+      left:42%;
+      right:0;
+      top:0;
+      bottom:0;
+      pointer-events:auto;
+      touch-action:none;
+    }
+
+    .joystickZone {
+      position:absolute;
+      left:0;
+      bottom:0;
+      width:42%;
+      height:62%;
+      pointer-events:auto;
+      touch-action:none;
+    }
+
+    .joyBase {
+      position:absolute;
+      width:110px;
+      height:110px;
+      border-radius:50%;
+      border:1px solid rgba(255,255,255,.12);
+      background:radial-gradient(circle,rgba(255,255,255,.03),rgba(255,255,255,.07));
+      -webkit-backdrop-filter:blur(7px);
+      backdrop-filter:blur(7px);
+      transform:translate(-50%,-50%);
+      display:none;
+      pointer-events:none;
+    }
+
+    .joyBase.active {
+      display:block;
+    }
+
+    .joyKnob {
+      position:absolute;
+      left:50%;
+      top:50%;
+      width:46px;
+      height:46px;
+      border-radius:50%;
+      transform:translate(-50%,-50%);
+      background:rgba(255,174,70,.18);
+      border:1px solid rgba(255,188,98,.5);
+      box-shadow:0 0 25px rgba(255,142,27,.12), inset 0 0 12px rgba(255,255,255,.05);
+    }
+
+    .actionBtn {
+      position:absolute;
+      pointer-events:auto;
+      display:grid;
+      place-items:center;
+      border-radius:50%;
+      width:58px;
+      height:58px;
+      background:linear-gradient(180deg,rgba(33,40,47,.54),rgba(12,17,22,.62));
+      border:1px solid rgba(255,255,255,.14);
+      -webkit-backdrop-filter:blur(8px);
+      backdrop-filter:blur(8px);
+      box-shadow:0 8px 24px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.04);
+      font-size:9px;
+      font-weight:900;
+      letter-spacing:.05em;
+      touch-action:none;
+    }
+
+    .actionBtn:active,
+    .actionBtn.pressed {
+      transform:scale(.93);
+      border-color:rgba(255,166,55,.6);
+      background:rgba(255,147,31,.14);
+    }
+
+    #fireRight {
+      right:calc(var(--safe-r) + 24px);
+      bottom:calc(var(--safe-b) + 86px);
+      width:72px;
+      height:72px;
+      background:radial-gradient(circle,rgba(255,115,24,.3),rgba(25,29,33,.54) 70%);
+      border-color:rgba(255,141,37,.45);
+    }
+
+    #fireLeft {
+      left:calc(var(--safe-l) + 22px);
+      top:44%;
+      width:54px;
+      height:54px;
+      border-color:rgba(255,141,37,.25);
+    }
+
+    #jumpBtn {
+      right:calc(var(--safe-r) + 103px);
+      bottom:calc(var(--safe-b) + 138px);
+    }
+
+    #crouchBtn {
+      right:calc(var(--safe-r) + 106px);
+      bottom:calc(var(--safe-b) + 68px);
+      width:51px;
+      height:51px;
+    }
+
+    #reloadBtn {
+      right:calc(var(--safe-r) + 24px);
+      bottom:calc(var(--safe-b) + 168px);
+      width:50px;
+      height:50px;
+    }
+
+    #scopeBtn {
+      right:calc(var(--safe-r) + 172px);
+      bottom:calc(var(--safe-b) + 104px);
+      width:52px;
+      height:52px;
+    }
+
+    .weaponSlots {
+      position:absolute;
+      bottom:calc(var(--safe-b) + 12px);
+      left:50%;
+      transform:translateX(-50%);
+      display:flex;
+      gap:6px;
+      pointer-events:auto;
+    }
+
+    .weaponSlot {
+      width:64px;
+      height:39px;
+      border-radius:10px;
+      background:rgba(9,13,17,.48);
+      border:1px solid rgba(255,255,255,.09);
+      -webkit-backdrop-filter:blur(7px);
+      backdrop-filter:blur(7px);
+      display:grid;
+      place-items:center;
+      font-size:9px;
+      font-weight:850;
+      color:var(--muted);
+      touch-action:none;
+    }
+
+    .weaponSlot.active {
+      color:#19130c;
+      border-color:rgba(255,208,139,.75);
+      background:linear-gradient(135deg,#ffc15c,#ff8b20);
+      box-shadow:0 0 20px rgba(255,143,32,.14);
+    }
+
+    .roundInfo {
+      position:absolute;
+      left:50%;
+      top:calc(var(--safe-t) + 50px);
+      transform:translateX(-50%);
+      display:flex;
+      gap:8px;
+      align-items:center;
+      padding:5px 8px;
+      border-radius:9px;
+      background:rgba(7,10,13,.36);
+      border:1px solid rgba(255,255,255,.07);
+      font-size:9px;
+      color:var(--muted);
+    }
+
+    .roundInfo b {
+      color:var(--text);
+    }
+
+    .damageVignette {
+      position:absolute;
+      inset:0;
+      background:radial-gradient(circle at center, transparent 45%, rgba(203,23,30,.48) 100%);
+      opacity:0;
+      transition:opacity .13s ease;
+      pointer-events:none;
+    }
+
+    .hitMarker {
+      position:absolute;
+      left:50%;
+      top:50%;
+      width:23px;
+      height:23px;
+      transform:translate(-50%,-50%) rotate(45deg);
+      opacity:0;
+      pointer-events:none;
+    }
+
+    .hitMarker:before,
+    .hitMarker:after {
+      content:"";
+      position:absolute;
+      background:white;
+      box-shadow:0 0 4px rgba(0,0,0,.8);
+    }
+
+    .hitMarker:before {
+      left:0;
+      right:0;
+      top:10px;
+      height:2px;
+    }
+
+    .hitMarker:after {
+      top:0;
+      bottom:0;
+      left:10px;
+      width:2px;
+    }
+
+    .hitMarker.show {
+      animation:hit .16s ease;
+    }
+
+    @keyframes hit {
+      0% { opacity:1; transform:translate(-50%,-50%) rotate(45deg) scale(.75); }
+      100% { opacity:0; transform:translate(-50%,-50%) rotate(45deg) scale(1.25); }
+    }
+
+    .toast {
+      position:absolute;
+      left:50%;
+      bottom:calc(var(--safe-b) + 74px);
+      transform:translateX(-50%) translateY(12px);
+      min-width:180px;
+      max-width:70vw;
+      text-align:center;
+      padding:8px 12px;
+      border-radius:11px;
+      background:rgba(5,8,11,.72);
+      border:1px solid rgba(255,255,255,.12);
+      -webkit-backdrop-filter:blur(12px);
+      backdrop-filter:blur(12px);
+      font-size:10px;
+      opacity:0;
+      pointer-events:none;
+      transition:.2s ease;
+      z-index:20;
+    }
+
+    .toast.show {
+      opacity:1;
+      transform:translateX(-50%) translateY(0);
+    }
+
+    #portraitBlock {
+      position:absolute;
+      inset:0;
+      z-index:999;
+      background:linear-gradient(145deg,#080d12,#131c24);
+      display:none;
+      place-items:center;
+      text-align:center;
+      pointer-events:none;
+      padding:30px;
+    }
+
+    .rotateCard {
+      width:min(340px, 90vw);
+      border-radius:22px;
+      padding:24px;
+    }
+
+    .phoneRotate {
+      width:54px;
+      height:96px;
+      border:3px solid rgba(255,255,255,.7);
+      border-radius:12px;
+      margin:0 auto 18px;
+      transform:rotate(24deg);
+      animation:rotateHint 1.6s ease-in-out infinite alternate;
+    }
+
+    @keyframes rotateHint {
+      to { transform:rotate(90deg); }
+    }
+
+    #pauseOverlay {
+      position:absolute;
+      inset:0;
+      z-index:40;
+      display:none;
+      place-items:center;
+      background:rgba(4,6,8,.55);
+      -webkit-backdrop-filter:blur(12px);
+      backdrop-filter:blur(12px);
+      pointer-events:auto;
+    }
+
+    #pauseOverlay.active {
+      display:grid;
+    }
+
+    .pauseCard {
+      width:min(320px,70vw);
+      border-radius:22px;
+      padding:18px;
+      text-align:center;
+    }
+
+    .pauseActions {
+      margin-top:14px;
+      display:grid;
+      gap:8px;
+    }
+
+    .smallBtn {
+      justify-content:center;
+      min-height:45px;
+    }
+
+    .smallBtn.primary {
+      background:linear-gradient(135deg,#ffb449,#ff851b);
+      color:#17120c;
+    }
+
+    @media (max-height:430px) {
+      .topbar { height:48px; }
+      .panelScreen { padding-top:calc(var(--safe-t) + 60px); }
+      .inventoryGrid { top:calc(var(--safe-t) + 60px); grid-template-columns:repeat(5,minmax(0,1fr)); }
+      .invCard { min-height:100px; }
+      .invCard .skinIcon { height:35px; }
+      .menuPanel { transform:translateY(-40%); }
+      .heroSub { margin-bottom:12px; }
+      .menuButtons { gap:7px; }
+      .menuBtn { min-height:44px; }
+      .radar { width:82px; height:82px; }
+      .healthPanel { width:126px; }
+      .weaponSlot { width:57px; height:34px; }
+      .actionBtn { width:52px; height:52px; }
+      #fireRight { width:64px; height:64px; }
+      .joyBase { width:96px; height:96px; }
+      .joyKnob { width:41px; height:41px; }
+    }
+
+    @media (orientation:portrait) and (max-width:900px) {
+      #portraitBlock { display:none !important; }
+      #menuScreen { min-height:720px; }
+      .menuPanel {
+        top:calc(var(--safe-t) + 88px);
+        left:calc(var(--safe-l) + 18px);
+        right:calc(var(--safe-r) + 18px);
+        width:auto;
+        transform:none;
+        padding-bottom:calc(var(--safe-b) + 70px);
+      }
+      .menuWeapon {
+        width:82vw;
+        right:-26vw;
+        top:42%;
+        opacity:.24;
+      }
+      .heroTitle { font-size:clamp(50px,16vw,78px); }
+      .heroSub { max-width:92%; }
+      .menuButtons { width:100%; }
+      .menuBtn { min-height:58px; }
+      .version { position:fixed; }
+      .panelScreen {
+        padding-top:calc(var(--safe-t) + 78px);
+        overflow-y:auto;
+        -webkit-overflow-scrolling:touch;
+      }
+      .caseLayout {
+        grid-template-columns:1fr;
+        height:auto;
+        min-height:calc(100% - 6px);
+        padding-bottom:calc(var(--safe-b) + 18px);
+      }
+      .caseInfo { min-height:440px; }
+      .rouletteWrap { min-height:300px; }
+      .rouletteViewport { min-height:220px; }
+      .inventoryGrid {
+        grid-template-columns:repeat(2,minmax(0,1fr));
+        position:absolute;
+        overflow-y:auto;
+      }
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+  <section id="menuScreen" class="screen active">
+    <div class="topbar glass">
+      <div class="brand"><div class="brandMark"></div><span>COUNTER MOBILE</span></div>
+      <div class="credits"><span class="creditIcon"></span><span id="creditText">0</span></div>
+    </div>
+    <div class="menuScene">
+      <div class="menuGrid"></div>
+      <div class="menuWeapon">
+        <div class="stock"></div><div class="rifle"></div><div class="grip"></div><div class="glowLine"></div>
+      </div>
+    </div>
+    <div class="menuPanel">
+      <div class="eyebrow">Mobile WebGL Prototype</div>
+      <h1 class="heroTitle">CS2<br/>Mobile</h1>
+      <p class="heroSub">Компактный браузерный FPS-прототип: сенсорный бой, кейсы, инвентарь и арена с ботами.</p>
+      <div class="menuButtons">
+        <a class="menuBtn primary" href="#gameScreen" data-go="game"><span>В БОЙ</span><span class="tag">ARENA 3v1</span></a>
+        <a class="menuBtn" href="#casesScreen" data-go="cases"><span>КЕЙСЫ</span><span class="tag">DROP ROULETTE</span></a>
+        <a class="menuBtn" href="#inventoryScreen" data-go="inventory"><span>ИНВЕНТАРЬ</span><span class="tag" id="inventoryCountTag">0 ITEMS</span></a>
+      </div>
+    </div>
+    <div class="version">WEBGL / IOS LANDSCAPE / <span id="runtimeStatus">STATIC PREVIEW</span></div>
+  </section>
+
+  <section id="casesScreen" class="screen panelScreen">
+    <div class="topbar glass">
+      <a class="smallBtn" style="min-height:36px;padding:0 13px" href="#menuScreen" data-go="menu">← НАЗАД</a>
+      <div class="brand">КЕЙСЫ</div>
+      <div class="credits"><span class="creditIcon"></span><span id="caseCreditText">0</span></div>
+    </div>
+    <div class="caseLayout">
+      <div class="caseInfo glass">
+        <div>
+          <div class="eyebrow">Blacksite Collection</div>
+          <h2 class="screenTitle">Night Ops</h2>
+          <div class="subline">Редкие покрытия для боевого набора</div>
+          <div class="caseBox"><div class="caseHandle"></div><div class="caseBody"></div></div>
+        </div>
+        <div>
+          <div class="casePrice"><span>Стоимость открытия</span><b style="color:var(--accent2)">250 CR</b></div>
+          <button id="openCaseBtn" class="openBtn">ОТКРЫТЬ КЕЙС</button>
+        </div>
+      </div>
+      <div class="rouletteWrap glass">
+        <div class="rouletteHeader">
+          <div><b>DROP ROULETTE</b><div class="subline">Можно листать касанием</div></div>
+          <div id="dropStatus" class="subline">Готово</div>
+        </div>
+        <div class="rouletteMarker"></div>
+        <div id="rouletteViewport" class="rouletteViewport"><div id="rouletteStrip" class="rouletteStrip"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="inventoryScreen" class="screen panelScreen">
+    <div class="topbar glass">
+      <a class="smallBtn" style="min-height:36px;padding:0 13px" href="#menuScreen" data-go="menu">← НАЗАД</a>
+      <div>
+        <div class="brand">ИНВЕНТАРЬ</div>
+        <div class="subline">Выберите предмет и экипируйте скин</div>
+      </div>
+      <div class="credits"><span class="creditIcon"></span><span id="inventoryCreditText">0</span></div>
+    </div>
+    <div id="inventoryGrid" class="inventoryGrid"></div>
+  </section>
+
+  <section id="gameScreen" class="screen">
+    <canvas id="gameCanvas"></canvas>
+    <div class="hud">
+      <div id="radar" class="radar"></div>
+      <div id="killfeed" class="killfeed"></div>
+      <button id="pauseBtn" class="pauseBtn">Ⅱ</button>
+      <div class="roundInfo"><span>BOTS <b id="botCounter">3</b></span><span>•</span><span><b id="roundTimer">01:30</b></span></div>
+      <div id="crosshair" class="crosshair"><i class="l"></i><i class="r"></i><i class="t"></i><i class="b"></i></div>
+      <div id="scopeOverlay" class="scopeOverlay"></div>
+      <div class="healthPanel hudPanel">
+        <div class="healthTop"><span>HEALTH</span><span id="hpText">100</span></div>
+        <div class="hpBar"><div id="hpFill" class="hpFill"></div></div>
+      </div>
+      <div class="ammoPanel hudPanel">
+        <div><span id="ammoMain" class="ammoMain">30</span> <span id="ammoReserve" class="ammoReserve">/ 90</span></div>
+        <div id="weaponLabel" class="weaponLabel">AK-47</div>
+      </div>
+      <div id="hitMarker" class="hitMarker"></div>
+      <div id="damageVignette" class="damageVignette"></div>
+    </div>
+
+    <div class="touchLayer">
+      <div id="lookZone" class="lookZone"></div>
+      <div id="joystickZone" class="joystickZone"><div id="joyBase" class="joyBase"><div id="joyKnob" class="joyKnob"></div></div></div>
+      <button id="fireLeft" class="actionBtn">FIRE</button>
+      <button id="fireRight" class="actionBtn">FIRE</button>
+      <button id="jumpBtn" class="actionBtn">JUMP</button>
+      <button id="crouchBtn" class="actionBtn">CROUCH</button>
+      <button id="reloadBtn" class="actionBtn">RELOAD</button>
+      <button id="scopeBtn" class="actionBtn">SCOPE</button>
+      <div id="weaponSlots" class="weaponSlots">
+        <button class="weaponSlot" data-weapon="knife">KNIFE</button>
+        <button class="weaponSlot" data-weapon="deagle">DEAGLE</button>
+        <button class="weaponSlot active" data-weapon="ak">AK-47</button>
+        <button class="weaponSlot" data-weapon="awp">AWP</button>
+      </div>
+    </div>
+
+    <div id="pauseOverlay">
+      <div class="pauseCard glass">
+        <div class="eyebrow">Пауза</div>
+        <h2 style="margin:0">БОЙ ПРИОСТАНОВЛЕН</h2>
+        <div class="pauseActions">
+          <button id="resumeBtn" class="smallBtn primary">ПРОДОЛЖИТЬ</button>
+          <button id="leaveBtn" class="smallBtn">В ГЛАВНОЕ МЕНЮ</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div id="toast" class="toast"></div>
+  <div id="portraitBlock">
+    <div class="rotateCard glass">
+      <div class="phoneRotate"></div>
+      <h2 style="margin:0 0 8px">ПОВЕРНИТЕ IPHONE</h2>
+      <div class="subline">Прототип рассчитан на ландшафтный режим.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let THREE = null;
+  let threePromise = null;
+
+  async function ensureThree(){
+    if (THREE) return THREE;
+    if (!threePromise) {
+      threePromise = import('https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js')
+        .then(mod => (THREE = mod))
+        .catch(err => { threePromise = null; throw err; });
+    }
+    return threePromise;
+  }
+
+  const $ = (s, root=document) => root.querySelector(s);
+  const $$ = (s, root=document) => [...root.querySelectorAll(s)];
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const rand = (a, b) => a + Math.random() * (b - a);
+  const now = () => performance.now();
+
+  const SAVE_KEY = 'cs2_mobile_webgl_save_v3';
+  const cloneData = value => JSON.parse(JSON.stringify(value));
+  const defaultSave = {
+    credits: 1850,
+    inventory: [
+      { id:'starter_ak', weapon:'ak', name:'AK-47 | Carbon Grid', rarity:'consumer' },
+      { id:'starter_deagle', weapon:'deagle', name:'Desert Eagle | Alloy', rarity:'industrial' },
+      { id:'starter_awp', weapon:'awp', name:'AWP | Night Slate', rarity:'mil' },
+      { id:'starter_knife', weapon:'knife', name:'Knife | Black Steel', rarity:'consumer' }
+    ],
+    equipped: {
+      knife:'starter_knife',
+      deagle:'starter_deagle',
+      ak:'starter_ak',
+      awp:'starter_awp'
+    }
+  };
+
+  let save = loadSave();
+
+  function loadSave(){
+    try {
+      const raw = localStorage.getItem(SAVE_KEY);
+      if (!raw) return cloneData(defaultSave);
+      const parsed = JSON.parse(raw);
+      return {
+        credits:Number.isFinite(parsed.credits) ? parsed.credits : defaultSave.credits,
+        inventory:Array.isArray(parsed.inventory) && parsed.inventory.length ? parsed.inventory : cloneData(defaultSave.inventory),
+        equipped:{ ...defaultSave.equipped, ...(parsed.equipped || {}) }
+      };
+    } catch(e) {
+      return cloneData(defaultSave);
+    }
+  }
+
+  function persist(){
+    try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch(e) {}
+    refreshEconomyUI();
+  }
+
+  const rarity = {
+    consumer:{ label:'Consumer', color:'#8795a1', glow:'rgba(135,149,161,.18)' },
+    industrial:{ label:'Industrial', color:'#64a4d8', glow:'rgba(76,154,221,.18)' },
+    mil:{ label:'Mil-Spec', color:'#6867dd', glow:'rgba(104,103,221,.22)' },
+    restricted:{ label:'Restricted', color:'#a44bcb', glow:'rgba(164,75,203,.22)' },
+    classified:{ label:'Classified', color:'#e04d92', glow:'rgba(224,77,146,.22)' },
+    covert:{ label:'Covert', color:'#f04e4e', glow:'rgba(240,78,78,.26)' },
+    rare:{ label:'Rare Special', color:'#f3c84d', glow:'rgba(243,200,77,.3)' }
+  };
+
+  const casePool = [
+    { weapon:'ak', name:'AK-47 | Ember Mesh', rarity:'mil', weight:28 },
+    { weapon:'deagle', name:'Desert Eagle | Night Circuit', rarity:'mil', weight:24 },
+    { weapon:'awp', name:'AWP | Dune Signal', rarity:'restricted', weight:13 },
+    { weapon:'ak', name:'AK-47 | Neon Sand', rarity:'restricted', weight:12 },
+    { weapon:'deagle', name:'Desert Eagle | Heatline', rarity:'classified', weight:6 },
+    { weapon:'awp', name:'AWP | Crimson Scope', rarity:'classified', weight:5 },
+    { weapon:'ak', name:'AK-47 | Inferno Core', rarity:'covert', weight:2.2 },
+    { weapon:'knife', name:'Knife | Amber Fade', rarity:'rare', weight:.8 }
+  ];
+
+  function weightedDrop(){
+    const total = casePool.reduce((s,x)=>s+x.weight,0);
+    let r = Math.random()*total;
+    for (const item of casePool){
+      r -= item.weight;
+      if (r <= 0) return item;
+    }
+    return casePool[0];
+  }
+
+  function refreshEconomyUI(){
+    $('#creditText').textContent = save.credits;
+    $('#caseCreditText').textContent = save.credits;
+    $('#inventoryCreditText').textContent = save.credits;
+    $('#inventoryCountTag').textContent = `${save.inventory.length} ITEMS`;
+  }
+
+  function toast(text, ms=1600){
+    const el = $('#toast');
+    el.textContent = text;
+    el.classList.add('show');
+    clearTimeout(toast._t);
+    toast._t = setTimeout(()=>el.classList.remove('show'),ms);
+  }
+
+  let audioCtx = null;
+  let audioUnlocked = false;
+
+  function unlockAudio(){
+    if (audioUnlocked) return;
+    try {
+      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      gain.gain.value = 0.00001;
+      osc.connect(gain).connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + .01);
+      audioUnlocked = true;
+    } catch(e) {}
+  }
+
+  function tone(freq=320, duration=.035, gain=.03, type='square'){
+    if (!audioCtx || audioCtx.state !== 'running') return;
+    const t = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq,t);
+    g.gain.setValueAtTime(gain,t);
+    g.gain.exponentialRampToValueAtTime(.0001,t+duration);
+    osc.connect(g).connect(audioCtx.destination);
+    osc.start(t);
+    osc.stop(t+duration+.01);
+  }
+
+  function gunSound(kind){
+    if (!audioCtx || audioCtx.state !== 'running') return;
+    const t = audioCtx.currentTime;
+    const buffer = audioCtx.createBuffer(1, Math.floor(audioCtx.sampleRate*.08), audioCtx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for(let i=0;i<data.length;i++) data[i]=(Math.random()*2-1)*Math.exp(-i/(data.length*.24));
+    const src = audioCtx.createBufferSource();
+    const filter = audioCtx.createBiquadFilter();
+    const gain = audioCtx.createGain();
+    src.buffer=buffer;
+    filter.type='lowpass';
+    filter.frequency.value = kind==='awp' ? 900 : kind==='deagle' ? 1200 : 1800;
+    gain.gain.value = kind==='awp' ? .18 : .10;
+    src.connect(filter).connect(gain).connect(audioCtx.destination);
+    src.start(t);
+    const osc=audioCtx.createOscillator();
+    const og=audioCtx.createGain();
+    osc.type='sine';
+    osc.frequency.setValueAtTime(kind==='awp'?85:kind==='deagle'?110:150,t);
+    osc.frequency.exponentialRampToValueAtTime(45,t+.08);
+    og.gain.setValueAtTime(kind==='awp'?.11:.06,t);
+    og.gain.exponentialRampToValueAtTime(.0001,t+.09);
+    osc.connect(og).connect(audioCtx.destination);
+    osc.start(t); osc.stop(t+.1);
+  }
+
+  window.addEventListener('pointerdown', unlockAudio, { once:false, passive:true });
+  window.addEventListener('touchstart', unlockAudio, { once:false, passive:true });
+
+  const screens = {
+    menu:$('#menuScreen'),
+    cases:$('#casesScreen'),
+    inventory:$('#inventoryScreen'),
+    game:$('#gameScreen')
+  };
+
+  function showScreen(name){
+    Object.entries(screens).forEach(([key,el])=>el.classList.toggle('active', key===name));
+    if (name==='inventory') renderInventory();
+    if (name==='cases') buildRoulette();
+    if (name==='game') startGame();
+    else if (game.running) stopGame(false);
+    refreshEconomyUI();
+  }
+
+  // One delegated click handler is more reliable in iOS WKWebView than mixed touch/pointer handlers.
+  document.addEventListener('click', e=>{
+    const control = e.target.closest?.('[data-go]');
+    if (!control) return;
+    const name = control.dataset.go;
+    if (!screens[name]) return;
+    e.preventDefault();
+    history.replaceState(null, '', `#${screens[name].id}`);
+    showScreen(name);
+  });
+
+  window.addEventListener('hashchange', ()=>{
+    const id = location.hash.slice(1);
+    const name = Object.keys(screens).find(key => screens[key].id === id);
+    if (name) showScreen(name);
+  });
+
+  function skinCardMarkup(item){
+    const r = rarity[item.rarity];
+    return `<div class="skinCard" style="--rarityGlow:${r.glow};border-bottom:2px solid ${r.color}">
+      <div class="skinIcon"><div class="miniGun"></div></div>
+      <div><div class="skinName">${item.name}</div><div class="skinWeapon">${item.weapon.toUpperCase()} · ${r.label}</div></div>
+    </div>`;
+  }
+
+  function buildRoulette(){
+    const strip = $('#rouletteStrip');
+    if (strip.children.length > 15) return;
+    strip.innerHTML='';
+    for(let i=0;i<48;i++){
+      const item=casePool[Math.floor(Math.random()*casePool.length)];
+      strip.insertAdjacentHTML('beforeend',skinCardMarkup(item));
+    }
+  }
+
+  let caseOpening=false;
+
+  async function openCase(){
+    if (caseOpening) return;
+    if (save.credits < 250){ toast('Недостаточно кредитов'); return; }
+    caseOpening=true;
+    save.credits-=250;
+    persist();
+    $('#openCaseBtn').disabled=true;
+    $('#dropStatus').textContent='Открытие…';
+
+    const viewport=$('#rouletteViewport');
+    const strip=$('#rouletteStrip');
+    const win=weightedDrop();
+    const cards=[];
+    for(let i=0;i<44;i++) cards.push(casePool[Math.floor(Math.random()*casePool.length)]);
+    const targetIndex=34;
+    cards[targetIndex]=win;
+    strip.innerHTML=cards.map(skinCardMarkup).join('');
+    viewport.scrollLeft=0;
+    await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+
+    const cardWidth=152;
+    const target=Math.max(0,targetIndex*cardWidth + 72 - viewport.clientWidth/2 + rand(-42,42));
+    const start=0;
+    const duration=4200;
+    const started=now();
+    let lastTick=-1;
+
+    await new Promise(resolve=>{
+      function step(t){
+        const p=clamp((t-started)/duration,0,1);
+        const eased=1-Math.pow(1-p,4.2);
+        const x=lerp(start,target,eased);
+        viewport.scrollLeft=x;
+        const tick=Math.floor((x+viewport.clientWidth/2)/cardWidth);
+        if(tick!==lastTick){
+          lastTick=tick;
+          tone(360+Math.min(260,p*260),.026,.018,'square');
+        }
+        if(p<1) requestAnimationFrame(step);
+        else resolve();
+      }
+      requestAnimationFrame(step);
+    });
+
+    const id=`drop_${Date.now()}_${Math.random().toString(16).slice(2,8)}`;
+    save.inventory.push({ id, weapon:win.weapon, name:win.name, rarity:win.rarity });
+    persist();
+    $('#dropStatus').textContent=`Выпало: ${win.name}`;
+    $('#openCaseBtn').disabled=false;
+    caseOpening=false;
+    tone(win.rarity==='rare'?920:win.rarity==='covert'?740:590,.18,.045,'sine');
+    toast(`Получено: ${win.name}`,2200);
+  }
+
+  $('#openCaseBtn').addEventListener('click',openCase);
+
+  function renderInventory(){
+    const grid=$('#inventoryGrid');
+    grid.innerHTML='';
+    save.inventory.forEach(item=>{
+      const r=rarity[item.rarity];
+      const equipped=save.equipped[item.weapon]===item.id;
+      const card=document.createElement('div');
+      card.className=`invCard ${equipped?'equipped':''}`;
+      card.style.borderBottom=`2px solid ${r.color}`;
+      card.innerHTML=`
+        <div class="skinIcon"><div class="miniGun"></div></div>
+        <div>
+          <div class="skinName">${item.name}</div>
+          <div class="skinWeapon">${item.weapon.toUpperCase()} · ${r.label}</div>
+        </div>
+        <button class="equipBtn">${equipped?'ЭКИПИРОВАНО':'ЭКИПИРОВАТЬ'}</button>`;
+      card.querySelector('.equipBtn').addEventListener('click',()=>{
+        save.equipped[item.weapon]=item.id;
+        persist();
+        renderInventory();
+        toast(`${item.name} экипирован`);
+      });
+      grid.appendChild(card);
+    });
+  }
+
+  const weaponDefs = {
+    knife:{ label:'KNIFE', clip:1, reserve:0, fireRate:430, reload:0, damage:58, head:90, spread:0, auto:false, range:2.2 },
+    deagle:{ label:'DESERT EAGLE', clip:7, reserve:35, fireRate:270, reload:1.5, damage:54, head:100, spread:.008, auto:false, range:70 },
+    ak:{ label:'AK-47', clip:30, reserve:90, fireRate:100, reload:1.7, damage:34, head:100, spread:.013, auto:true, range:75 },
+    awp:{ label:'AWP', clip:5, reserve:20, fireRate:1150, reload:2.25, damage:115, head:180, spread:.0015, auto:false, range:120 }
+  };
+
+  const game = {
+    renderer:null,
+    scene:null,
+    camera:null,
+    clock:null,
+    running:false,
+    paused:false,
+    initialized:false,
+    lastFrame:0,
+    roundStart:0,
+    roundDuration:90,
+    player:{
+      pos:null,
+      vel:null,
+      yaw:Math.PI,
+      pitch:0,
+      health:100,
+      crouch:false,
+      grounded:true,
+      radius:.32,
+      height:1.72
+    },
+    input:{ moveX:0, moveY:0, fire:false, lookTouch:null, joyTouch:null, keys:new Set() },
+    bots:[],
+    raycaster:null,
+    shootables:[],
+    obstacles:[],
+    currentWeapon:'ak',
+    ammo:{ knife:1,deagle:7,ak:30,awp:5 },
+    reserve:{ knife:0,deagle:35,ak:90,awp:20 },
+    reloading:false,
+    reloadEnd:0,
+    lastShot:0,
+    scope:false,
+    recoil:0,
+    gunRoot:null,
+    muzzle:null,
+    weaponModels:{},
+    dynamicDpr:Math.min(window.devicePixelRatio||1,1.5),
+    fpsSamples:[],
+    fpsCheck:0,
+    aiAccumulator:0,
+    score:0
+  };
+
+  async function startGame(){
+    try {
+      if(!game.initialized){
+        toast('Загрузка WebGL…', 1200);
+        await ensureThree();
+        initThree();
+      }
+      resetRound();
+      game.running=true;
+      game.paused=false;
+      $('#pauseOverlay').classList.remove('active');
+      game.clock.start();
+      requestAnimationFrame(loop);
+    } catch (err) {
+      console.error('Three.js load failed', err);
+      toast('Не удалось загрузить 3D-движок. Меню продолжает работать.', 2800);
+      Object.entries(screens).forEach(([key,el])=>el.classList.toggle('active', key==='menu'));
+    }
+  }
+
+  function stopGame(toMenu=true){
+    game.running=false;
+    game.input.fire=false;
+    game.input.moveX=0;
+    game.input.moveY=0;
+    game.scope=false;
+    if(game.camera){ game.camera.fov=72; game.camera.updateProjectionMatrix(); }
+    $('#scopeOverlay').classList.remove('active');
+    if(toMenu) showScreen('menu');
+  }
+
+  function initThree(){
+    game.clock = new THREE.Clock();
+    game.player.pos = new THREE.Vector3(0,1.72,8);
+    game.player.vel = new THREE.Vector3();
+    game.raycaster = new THREE.Raycaster();
+    const canvas=$('#gameCanvas');
+    const renderer=new THREE.WebGLRenderer({ canvas, antialias:false, alpha:false, powerPreference:'high-performance', stencil:false, depth:true });
+    renderer.setClearColor(0x8f806d,1);
+    renderer.setPixelRatio(game.dynamicDpr);
+    renderer.setSize(innerWidth,innerHeight,false);
+    renderer.shadowMap.enabled=false;
+    renderer.outputColorSpace=THREE.SRGBColorSpace;
+    game.renderer=renderer;
+
+    const scene=new THREE.Scene();
+    scene.background=new THREE.Color(0xa89278);
+    scene.fog=new THREE.Fog(0xa89278,18,62);
+    game.scene=scene;
+
+    const camera=new THREE.PerspectiveCamera(72,innerWidth/innerHeight,.05,130);
+    camera.rotation.order='YXZ';
+    scene.add(camera);
+    game.camera=camera;
+
+    const hemi=new THREE.HemisphereLight(0xe8d8b4,0x5c4936,2.2);
+    scene.add(hemi);
+    const sun=new THREE.DirectionalLight(0xffe3b7,1.45);
+    sun.position.set(-8,14,5);
+    scene.add(sun);
+
+    buildArena();
+    buildWeaponModels();
+    game.initialized=true;
+
+    addEventListener('resize', resizeRenderer);
+    addEventListener('orientationchange',()=>setTimeout(resizeRenderer,120));
+    document.addEventListener('visibilitychange',()=>{
+      if(document.hidden && game.running) setPaused(true);
+    });
+  }
+
+  function makeCanvasTexture(base='#a58b68', line='#775f44'){
+    const c=document.createElement('canvas');
+    c.width=128; c.height=128;
+    const ctx=c.getContext('2d');
+    ctx.fillStyle=base; ctx.fillRect(0,0,128,128);
+    ctx.strokeStyle=line; ctx.lineWidth=2;
+    for(let y=0;y<128;y+=24){
+      ctx.beginPath(); ctx.moveTo(0,y+rand(-2,2)); ctx.lineTo(128,y+rand(-2,2)); ctx.stroke();
+    }
+    ctx.globalAlpha=.08;
+    for(let i=0;i<80;i++){
+      ctx.fillStyle=Math.random()>.5?'#fff':'#000';
+      ctx.fillRect(Math.random()*128,Math.random()*128,Math.random()*3+1,Math.random()*3+1);
+    }
+    ctx.globalAlpha=1;
+    const tex=new THREE.CanvasTexture(c);
+    tex.wrapS=tex.wrapT=THREE.RepeatWrapping;
+    tex.repeat.set(2,2);
+    tex.colorSpace=THREE.SRGBColorSpace;
+    tex.anisotropy=1;
+    return tex;
+  }
+
+  function box(x,y,z,w,h,d,mat, obstacle=true){
+    const mesh=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);
+    mesh.position.set(x,y,z);
+    game.scene.add(mesh);
+    if(obstacle){
+      game.obstacles.push({ minX:x-w/2, maxX:x+w/2, minZ:z-d/2, maxZ:z+d/2 });
+    }
+    return mesh;
+  }
+
+  function buildArena(){
+    game.obstacles=[];
+    const sandTex=makeCanvasTexture('#b79d78','#8d7351');
+    sandTex.repeat.set(12,12);
+    const wallTex=makeCanvasTexture('#b89b71','#8c714c');
+    const crateTex=makeCanvasTexture('#5d4630','#31271d');
+
+    const floorMat=new THREE.MeshLambertMaterial({ map:sandTex });
+    const wallMat=new THREE.MeshLambertMaterial({ map:wallTex });
+    const darkMat=new THREE.MeshLambertMaterial({ color:0x6f6254 });
+    const crateMat=new THREE.MeshLambertMaterial({ map:crateTex });
+    const trimMat=new THREE.MeshLambertMaterial({ color:0x56493c });
+
+    const floor=new THREE.Mesh(new THREE.PlaneGeometry(42,42),floorMat);
+    floor.rotation.x=-Math.PI/2;
+    floor.position.y=0;
+    game.scene.add(floor);
+
+    box(0,2.25,-20,42,4.5,1,wallMat);
+    box(0,2.25,20,42,4.5,1,wallMat);
+    box(-20,2.25,0,1,4.5,42,wallMat);
+    box(20,2.25,0,1,4.5,42,wallMat);
+
+    box(-8.5,1.75,-7.3,1,3.5,13,wallMat);
+    box(8.5,1.75,6.4,1,3.5,15,wallMat);
+    box(1,1.75,-12.2,12,3.5,1,wallMat);
+    box(-1,1.75,12.8,11,3.5,1,wallMat);
+    box(-13,1.75,4.5,9,3.5,1,wallMat);
+    box(13,1.75,-3.5,9,3.5,1,wallMat);
+
+    const crateSpots=[
+      [-4,1,-3,2,2,2],[-2,1,-3,2,2,2],
+      [4.7,1,1.2,2,2,2],[4.7,1,3.2,2,2,2],
+      [-12.5,1,-12,2.2,2.2,2.2],[12.2,1,12,2.2,2.2,2.2],
+      [-3.5,.75,8.6,1.5,1.5,3],[12.5,.75,2.5,3,1.5,1.5]
+    ];
+    crateSpots.forEach(v=>box(v[0],v[1],v[2],v[3],v[4],v[5],crateMat));
+
+    for(let x=-16;x<=16;x+=8) box(x,.17,-17,4,.34,.5,trimMat,false);
+    for(let x=-16;x<=16;x+=8) box(x,.17,17,4,.34,.5,trimMat,false);
+
+    const archMat=new THREE.MeshLambertMaterial({ color:0x8a775f });
+    box(-8.5,3.3,0,1,1.2,3.2,archMat,false);
+    box(8.5,3.3,0,1,1.2,3.2,archMat,false);
+
+    const skyGeo=new THREE.SphereGeometry(85,16,8);
+    const skyMat=new THREE.MeshBasicMaterial({ color:0xcdbb9f, side:THREE.BackSide });
+    const sky=new THREE.Mesh(skyGeo,skyMat);
+    sky.position.y=-18;
+    game.scene.add(sky);
+
+    for(let i=0;i<12;i++){
+      const debris=new THREE.Mesh(new THREE.BoxGeometry(rand(.12,.35),rand(.05,.14),rand(.12,.4)),darkMat);
+      debris.position.set(rand(-17,17),.04,rand(-17,17));
+      debris.rotation.y=rand(0,Math.PI);
+      game.scene.add(debris);
+    }
+  }
+
+  function materialForEquipped(weapon){
+    const id=save.equipped[weapon];
+    const item=save.inventory.find(x=>x.id===id);
+    const r=item ? item.rarity : 'consumer';
+    const palette={
+      consumer:0x6a7277,
+      industrial:0x4c82a9,
+      mil:0x5a57b0,
+      restricted:0x8540a2,
+      classified:0xac3e74,
+      covert:0xb74242,
+      rare:0xc89a2c
+    };
+    return new THREE.MeshStandardMaterial({ color:palette[r], roughness:.62, metalness:.32 });
+  }
+
+  function clearGroup(g){ while(g.children.length) g.remove(g.children[0]); }
+
+  function buildWeaponModels(){
+    const root=new THREE.Group();
+    game.camera.add(root);
+    game.gunRoot=root;
+    root.position.set(.32,-.26,-.55);
+    root.rotation.set(-.04,-.08,0);
+    updateWeaponModel();
+  }
+
+  function updateWeaponModel(){
+    if(!game.gunRoot) return;
+    clearGroup(game.gunRoot);
+    const w=game.currentWeapon;
+    const mat=materialForEquipped(w);
+    const dark=new THREE.MeshStandardMaterial({ color:0x1b1e21,roughness:.72,metalness:.2 });
+    const wood=new THREE.MeshStandardMaterial({ color:0x4b2d1b,roughness:.8,metalness:.04 });
+    const g=new THREE.Group();
+
+    if(w==='knife'){
+      const blade=new THREE.Mesh(new THREE.BoxGeometry(.055,.025,.52),new THREE.MeshStandardMaterial({color:0x949da3,metalness:.7,roughness:.28}));
+      blade.position.z=-.2;
+      blade.rotation.y=.08;
+      const handle=new THREE.Mesh(new THREE.BoxGeometry(.09,.085,.22),dark);
+      handle.position.z=.16;
+      g.add(blade,handle);
+      g.rotation.set(.28,-.3,.18);
+      g.position.set(.14,-.07,.02);
+    } else if(w==='deagle'){
+      const slide=new THREE.Mesh(new THREE.BoxGeometry(.12,.1,.55),mat);
+      slide.position.z=-.12;
+      const barrel=new THREE.Mesh(new THREE.CylinderGeometry(.025,.025,.36,8),dark);
+      barrel.rotation.x=Math.PI/2;
+      barrel.position.set(0,.01,-.44);
+      const grip=new THREE.Mesh(new THREE.BoxGeometry(.12,.26,.13),dark);
+      grip.position.set(0,-.16,.05);
+      grip.rotation.x=-.16;
+      g.add(slide,barrel,grip);
+    } else if(w==='ak'){
+      const body=new THREE.Mesh(new THREE.BoxGeometry(.15,.12,.65),mat);
+      body.position.z=-.18;
+      const barrel=new THREE.Mesh(new THREE.CylinderGeometry(.02,.025,.5,8),dark);
+      barrel.rotation.x=Math.PI/2; barrel.position.z=-.72;
+      const stock=new THREE.Mesh(new THREE.BoxGeometry(.13,.12,.34),wood); stock.position.z=.31;
+      const mag=new THREE.Mesh(new THREE.BoxGeometry(.12,.27,.15),dark); mag.position.set(0,-.16,-.12); mag.rotation.x=.14;
+      const grip=new THREE.Mesh(new THREE.BoxGeometry(.1,.22,.13),wood); grip.position.set(0,-.15,.13); grip.rotation.x=-.2;
+      g.add(body,barrel,stock,mag,grip);
+    } else if(w==='awp'){
+      const body=new THREE.Mesh(new THREE.BoxGeometry(.13,.12,.7),mat); body.position.z=-.2;
+      const barrel=new THREE.Mesh(new THREE.CylinderGeometry(.021,.024,.72,8),dark); barrel.rotation.x=Math.PI/2; barrel.position.z=-.9;
+      const stock=new THREE.Mesh(new THREE.BoxGeometry(.15,.16,.42),dark); stock.position.z=.38;
+      const scope=new THREE.Mesh(new THREE.CylinderGeometry(.055,.055,.36,10),dark); scope.rotation.x=Math.PI/2; scope.position.set(0,.12,-.14);
+      const lens=new THREE.Mesh(new THREE.CircleGeometry(.05,12),new THREE.MeshBasicMaterial({color:0x244963})); lens.position.set(0,.12,-.33);
+      g.add(body,barrel,stock,scope,lens);
+    }
+
+    const muzzle=new THREE.Object3D();
+    muzzle.position.set(0,.02,w==='awp'?-1.28:w==='ak'?-1:w==='deagle'?-0.68:-.45);
+    g.add(muzzle);
+    game.muzzle=muzzle;
+    game.gunRoot.add(g);
+  }
+
+  function spawnBot(x,z,index){
+    const root=new THREE.Group();
+    root.position.set(x,0,z);
+
+    const bodyMat=new THREE.MeshLambertMaterial({ color:index%2?0x75664f:0x655746 });
+    const vestMat=new THREE.MeshLambertMaterial({ color:0x273039 });
+    const headMat=new THREE.MeshLambertMaterial({ color:0xb98f6e });
+    const dark=new THREE.MeshLambertMaterial({ color:0x20262b });
+
+    const legs=new THREE.Mesh(new THREE.BoxGeometry(.45,.75,.32),dark);
+    legs.position.y=.42;
+    const body=new THREE.Mesh(new THREE.BoxGeometry(.62,.78,.38),bodyMat);
+    body.position.y=1.05;
+    const vest=new THREE.Mesh(new THREE.BoxGeometry(.66,.48,.42),vestMat);
+    vest.position.y=1.13;
+    const head=new THREE.Mesh(new THREE.SphereGeometry(.19,10,8),headMat);
+    head.position.y=1.62;
+    const gun=new THREE.Mesh(new THREE.BoxGeometry(.08,.08,.58),dark);
+    gun.position.set(.32,1.15,-.18);
+    gun.rotation.y=-.1;
+    root.add(legs,body,vest,head,gun);
+
+    const bot={
+      root,
+      body,
+      head,
+      alive:true,
+      hp:100,
+      index,
+      nextShot:0,
+      fall:0,
+      strafeDir:Math.random()>.5?1:-1,
+      think:Math.random(),
+      respawnAt:0
+    };
+
+    body.userData={ bot, hit:'body' };
+    vest.userData={ bot, hit:'body' };
+    head.userData={ bot, hit:'head' };
+    legs.userData={ bot, hit:'body' };
+    game.shootables.push(body,vest,head,legs);
+    game.scene.add(root);
+    game.bots.push(bot);
+  }
+
+  function clearBots(){
+    game.bots.forEach(b=>game.scene.remove(b.root));
+    game.bots=[];
+    game.shootables=[];
+  }
+
+  function resetRound(){
+    clearBots();
+    game.player.pos.set(0,1.72,8);
+    game.player.vel.set(0,0,0);
+    game.player.yaw=Math.PI;
+    game.player.pitch=0;
+    game.player.health=100;
+    game.player.crouch=false;
+    game.player.grounded=true;
+    game.currentWeapon='ak';
+    game.ammo={ knife:1,deagle:7,ak:30,awp:5 };
+    game.reserve={ knife:0,deagle:35,ak:90,awp:20 };
+    game.reloading=false;
+    game.scope=false;
+    game.recoil=0;
+    game.score=0;
+    game.roundStart=performance.now();
+    game.aiAccumulator=0;
+    game.camera.fov=72;
+    game.camera.updateProjectionMatrix();
+    $('#scopeOverlay').classList.remove('active');
+    $('#killfeed').innerHTML='';
+    $('#weaponSlots').querySelectorAll('.weaponSlot').forEach(x=>x.classList.toggle('active',x.dataset.weapon==='ak'));
+    spawnBot(-12,-9,0);
+    spawnBot(11,-8,1);
+    spawnBot(2,-15,2);
+    updateWeaponModel();
+    updateHUD();
+  }
+
+  function resizeRenderer(){
+    if(!game.renderer) return;
+    game.camera.aspect=innerWidth/innerHeight;
+    game.camera.updateProjectionMatrix();
+    game.renderer.setPixelRatio(game.dynamicDpr);
+    game.renderer.setSize(innerWidth,innerHeight,false);
+  }
+
+  function setWeapon(name){
+    if(!weaponDefs[name] || game.currentWeapon===name) return;
+    game.currentWeapon=name;
+    game.reloading=false;
+    game.scope=false;
+    game.camera.fov=72;
+    game.camera.updateProjectionMatrix();
+    $('#scopeOverlay').classList.remove('active');
+    $('#weaponSlots').querySelectorAll('.weaponSlot').forEach(x=>x.classList.toggle('active',x.dataset.weapon===name));
+    updateWeaponModel();
+    updateHUD();
+    tone(190,.045,.018,'triangle');
+  }
+
+  function toggleScope(){
+    if(game.currentWeapon!=='awp') { toast('Scope доступен для AWP'); return; }
+    if(game.reloading) return;
+    game.scope=!game.scope;
+    game.camera.fov=game.scope?24:72;
+    game.camera.updateProjectionMatrix();
+    $('#scopeOverlay').classList.toggle('active',game.scope);
+    $('#crosshair').style.display=game.scope?'none':'block';
+    tone(game.scope?520:410,.04,.016,'sine');
+  }
+
+  function reload(){
+    const w=game.currentWeapon;
+    const def=weaponDefs[w];
+    if(def.reload<=0 || game.reloading) return;
+    if(game.ammo[w]>=def.clip || game.reserve[w]<=0) return;
+    game.reloading=true;
+    game.reloadEnd=performance.now()+def.reload*1000;
+    game.scope=false;
+    game.camera.fov=72;
+    game.camera.updateProjectionMatrix();
+    $('#scopeOverlay').classList.remove('active');
+    $('#crosshair').style.display='block';
+    toast('Перезарядка…',Math.floor(def.reload*900));
+    tone(230,.06,.02,'triangle');
+  }
+
+  function finishReload(){
+    const w=game.currentWeapon;
+    const def=weaponDefs[w];
+    const need=def.clip-game.ammo[w];
+    const give=Math.min(need,game.reserve[w]);
+    game.ammo[w]+=give;
+    game.reserve[w]-=give;
+    game.reloading=false;
+    tone(330,.05,.022,'triangle');
+    updateHUD();
+  }
+
+  function shoot(){
+    const t=performance.now();
+    const w=game.currentWeapon;
+    const def=weaponDefs[w];
+    if(game.reloading || game.player.health<=0) return;
+    if(t-game.lastShot<def.fireRate) return;
+    if(w!=='knife' && game.ammo[w]<=0){
+      tone(150,.025,.02,'square');
+      if(game.reserve[w]>0) reload();
+      return;
+    }
+    game.lastShot=t;
+    if(w!=='knife') game.ammo[w]--;
+    gunSound(w);
+
+    if(w==='knife'){
+      knifeAttack(def);
+    } else {
+      rayShot(def,w);
+      const recoil = w==='awp'?.035:w==='deagle'?.022:w==='ak'?.012:.01;
+      game.player.pitch=clamp(game.player.pitch-recoil,-1.35,1.35);
+      game.recoil=Math.min(.05,game.recoil+recoil);
+    }
+
+    animateGunKick(w);
+    updateHUD();
+  }
+
+  function animateGunKick(w){
+    if(!game.gunRoot) return;
+    const baseZ=-.55;
+    const amount=w==='awp'?.15:w==='deagle'?.09:.055;
+    game.gunRoot.position.z=baseZ+amount;
+  }
+
+  function knifeAttack(def){
+    const origin=game.camera.getWorldPosition(new THREE.Vector3());
+    const dir=game.camera.getWorldDirection(new THREE.Vector3());
+    game.raycaster.set(origin,dir);
+    game.raycaster.far=def.range;
+    const hits=game.raycaster.intersectObjects(game.shootables,false);
+    if(hits.length){
+      const obj=hits[0].object;
+      const bot=obj.userData.bot;
+      if(bot?.alive) damageBot(bot,obj.userData.hit==='head'?def.head:def.damage,obj.userData.hit==='head');
+    }
+  }
+
+  function rayShot(def,w){
+    const origin=game.camera.getWorldPosition(new THREE.Vector3());
+    const dir=game.camera.getWorldDirection(new THREE.Vector3());
+    const spread = (game.scope && w==='awp') ? .0003 : def.spread + (w==='ak'?game.recoil*.22:0);
+    dir.x += rand(-spread,spread);
+    dir.y += rand(-spread,spread);
+    dir.z += rand(-spread,spread);
+    dir.normalize();
+    game.raycaster.set(origin,dir);
+    game.raycaster.far=def.range;
+    const hits=game.raycaster.intersectObjects(game.shootables,false);
+    if(hits.length){
+      const obj=hits[0].object;
+      const bot=obj.userData.bot;
+      if(bot?.alive){
+        const head=obj.userData.hit==='head';
+        damageBot(bot,head?def.head:def.damage,head);
+      }
+    }
+  }
+
+  function damageBot(bot,amount,head=false){
+    if(!bot.alive) return;
+    bot.hp-=amount;
+    showHitMarker(head);
+    if(bot.hp<=0){
+      bot.alive=false;
+      bot.fall=0;
+      game.score++;
+      save.credits+=head?75:50;
+      persist();
+      addKillfeed(`YOU <b>${head?'HEADSHOT · ':''}${weaponDefs[game.currentWeapon].label}</b> BOT ${bot.index+1}`);
+      tone(head?880:660,.075,.03,'sine');
+      updateBotCounter();
+    }
+  }
+
+  function showHitMarker(head){
+    const el=$('#hitMarker');
+    el.style.filter=head?'drop-shadow(0 0 3px #ff9b27)':'none';
+    el.classList.remove('show');
+    void el.offsetWidth;
+    el.classList.add('show');
+  }
+
+  function addKillfeed(html){
+    const feed=$('#killfeed');
+    const line=document.createElement('div');
+    line.className='killLine';
+    line.innerHTML=html;
+    feed.prepend(line);
+    while(feed.children.length>4) feed.lastElementChild.remove();
+    setTimeout(()=>line.remove(),4300);
+  }
+
+  function damagePlayer(amount,bot){
+    if(game.player.health<=0) return;
+    game.player.health=Math.max(0,game.player.health-amount);
+    $('#damageVignette').style.opacity='.9';
+    setTimeout(()=>$('#damageVignette').style.opacity='0',120);
+    tone(120,.06,.035,'sawtooth');
+    updateHUD();
+    if(game.player.health<=0){
+      addKillfeed(`BOT ${bot.index+1} <b>AK-47</b> YOU`);
+      toast('Вы погибли — раунд перезапущен',2200);
+      setTimeout(()=>{ if(game.running && !game.paused) resetRound(); },1500);
+    }
+  }
+
+  function updateBotCounter(){
+    $('#botCounter').textContent=game.bots.filter(b=>b.alive).length;
+  }
+
+  function updateHUD(){
+    $('#hpText').textContent=Math.ceil(game.player.health);
+    $('#hpFill').style.width=`${game.player.health}%`;
+    const w=game.currentWeapon;
+    if(w==='knife'){
+      $('#ammoMain').textContent='∞';
+      $('#ammoReserve').textContent='';
+    } else {
+      $('#ammoMain').textContent=game.ammo[w];
+      $('#ammoReserve').textContent=`/ ${game.reserve[w]}`;
+    }
+    $('#weaponLabel').textContent=weaponDefs[w].label;
+    updateBotCounter();
+  }
+
+  function isBlocked(x,z){
+    if(x<-19.2||x>19.2||z<-19.2||z>19.2) return true;
+    const r=game.player.radius;
+    return game.obstacles.some(o=>x+r>o.minX && x-r<o.maxX && z+r>o.minZ && z-r<o.maxZ);
+  }
+
+  function updatePlayer(dt){
+    const p=game.player;
+    let mx=game.input.moveX;
+    let my=game.input.moveY;
+    const keys=game.input.keys;
+    if(keys.has('KeyW')) my=Math.max(my,1);
+    if(keys.has('KeyS')) my=Math.min(my,-1);
+    if(keys.has('KeyA')) mx=Math.min(mx,-1);
+    if(keys.has('KeyD')) mx=Math.max(mx,1);
+    if(keys.has('ControlLeft')||keys.has('KeyC')) p.crouch=true;
+
+    const mag=Math.hypot(mx,my);
+    if(mag>1){ mx/=mag; my/=mag; }
+    const speed=p.crouch?2.45:4.25;
+    const sy=Math.sin(p.yaw), cy=Math.cos(p.yaw);
+    const dx=(mx*cy + my*sy)*speed*dt;
+    const dz=(-mx*sy + my*cy)*speed*dt;
+    const nx=p.pos.x+dx;
+    const nz=p.pos.z+dz;
+    if(!isBlocked(nx,p.pos.z)) p.pos.x=nx;
+    if(!isBlocked(p.pos.x,nz)) p.pos.z=nz;
+
+    p.vel.y-=12.5*dt;
+    p.pos.y+=p.vel.y*dt;
+    const targetEye=p.crouch?1.18:1.72;
+    if(p.pos.y<=targetEye){ p.pos.y=targetEye; p.vel.y=0; p.grounded=true; }
+    if(!p.grounded && p.crouch) p.pos.y=Math.max(p.pos.y,1.18);
+
+    game.camera.position.copy(p.pos);
+    game.camera.rotation.y=p.yaw;
+    game.camera.rotation.x=p.pitch;
+    game.recoil=Math.max(0,game.recoil-dt*.028);
+
+    if(game.gunRoot){
+      const moving=Math.min(1,Math.hypot(mx,my));
+      const time=performance.now()*.008;
+      game.gunRoot.position.x=lerp(game.gunRoot.position.x,.32 + Math.sin(time)*.006*moving,.18);
+      game.gunRoot.position.y=lerp(game.gunRoot.position.y,-.26 + Math.abs(Math.cos(time))*.006*moving,.18);
+      game.gunRoot.position.z=lerp(game.gunRoot.position.z,-.55,.18);
+    }
+  }
+
+  function jump(){
+    if(game.player.grounded && !game.player.crouch && game.player.health>0){
+      game.player.vel.y=5.0;
+      game.player.grounded=false;
+      tone(180,.04,.01,'triangle');
+    }
+  }
+
+  function lineOfSight(from,to){
+    const dir=to.clone().sub(from);
+    const dist=dir.length();
+    dir.normalize();
+    const ray=new THREE.Raycaster(from,dir,0,dist);
+    const arenaMeshes=game.scene.children.filter(o=>o.isMesh && !game.shootables.includes(o) && o.geometry?.type==='BoxGeometry');
+    const hit=ray.intersectObjects(arenaMeshes,false);
+    return hit.length===0;
+  }
+
+  function updateBotsAI(dt){
+    const p=game.player;
+    const target=new THREE.Vector3(p.pos.x,1.25,p.pos.z);
+    game.bots.forEach(bot=>{
+      if(!bot.alive) return;
+      const pos=bot.root.position;
+      const to=target.clone().sub(pos);
+      const dist=to.length();
+      bot.root.rotation.y=Math.atan2(to.x,to.z);
+      const sees=dist<18 && lineOfSight(new THREE.Vector3(pos.x,1.35,pos.z),target);
+      const speed=sees?1.1:1.45;
+      let dir=to.normalize();
+
+      if(sees && dist<9){
+        const side=new THREE.Vector3(dir.z,0,-dir.x).multiplyScalar(bot.strafeDir*.75);
+        dir=side.add(dir.multiplyScalar(dist<5?-.3:.2)).normalize();
+      }
+
+      const nx=pos.x+dir.x*speed*dt;
+      const nz=pos.z+dir.z*speed*dt;
+      if(!botBlocked(nx,nz,bot)) pos.x=nx;
+      else bot.strafeDir*=-1;
+      if(!botBlocked(pos.x,nz,bot)) pos.z=nz;
+
+      if(sees && dist<14 && performance.now()>bot.nextShot){
+        bot.nextShot=performance.now()+rand(650,1050);
+        const accuracy=clamp(.72-dist*.028,.28,.7);
+        gunSound('ak');
+        if(Math.random()<accuracy) damagePlayer(Math.random()<.12?38:rand(8,16),bot);
+      }
+    });
+  }
+
+  function botBlocked(x,z,self){
+    if(x<-18.7||x>18.7||z<-18.7||z>18.7) return true;
+    if(game.obstacles.some(o=>x+.28>o.minX&&x-.28<o.maxX&&z+.28>o.minZ&&z-.28<o.maxZ)) return true;
+    return game.bots.some(b=>b!==self&&b.alive&&b.root.position.distanceTo(new THREE.Vector3(x,0,z))<.62);
+  }
+
+  function updateDeadBots(dt){
+    game.bots.forEach(bot=>{
+      if(bot.alive) return;
+      bot.fall=Math.min(1,bot.fall+dt*2.1);
+      bot.root.rotation.z=lerp(bot.root.rotation.z,Math.PI*.48,bot.fall*.08);
+      bot.root.position.y=lerp(bot.root.position.y,-.33,bot.fall*.08);
+    });
+  }
+
+  function updateRadar(){
+    const radar=$('#radar');
+    $$('.radarDot',radar).forEach(x=>x.remove());
+    const p=game.player.pos;
+    game.bots.filter(b=>b.alive).forEach(bot=>{
+      let dx=bot.root.position.x-p.x;
+      let dz=bot.root.position.z-p.z;
+      const c=Math.cos(-game.player.yaw), s=Math.sin(-game.player.yaw);
+      const rx=dx*c-dz*s;
+      const rz=dx*s+dz*c;
+      const scale=2.05;
+      const x=clamp(48+rx*scale,7,89);
+      const y=clamp(48+rz*scale,7,89);
+      const dot=document.createElement('div');
+      dot.className='radarDot';
+      dot.style.left=`${x}px`;
+      dot.style.top=`${y}px`;
+      radar.appendChild(dot);
+    });
+  }
+
+  function updateTimer(){
+    const elapsed=(performance.now()-game.roundStart)/1000;
+    const remain=Math.max(0,game.roundDuration-elapsed);
+    const m=Math.floor(remain/60);
+    const s=Math.floor(remain%60);
+    $('#roundTimer').textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    if(remain<=0){
+      toast('Время раунда вышло — новый раунд');
+      resetRound();
+    } else if(game.bots.every(b=>!b.alive)){
+      toast('Раунд выигран +300 CR',1800);
+      save.credits+=300;
+      persist();
+      resetRound();
+    }
+  }
+
+  function adaptiveResolution(dt){
+    game.fpsSamples.push(1/Math.max(.001,dt));
+    if(game.fpsSamples.length>45) game.fpsSamples.shift();
+    if(performance.now()-game.fpsCheck<3500 || game.fpsSamples.length<30) return;
+    game.fpsCheck=performance.now();
+    const avg=game.fpsSamples.reduce((a,b)=>a+b,0)/game.fpsSamples.length;
+    const deviceMax=Math.min(window.devicePixelRatio||1,1.5);
+    let next=game.dynamicDpr;
+    if(avg<42) next=Math.max(.75,next-.12);
+    else if(avg>56) next=Math.min(deviceMax,next+.08);
+    if(Math.abs(next-game.dynamicDpr)>.03){
+      game.dynamicDpr=next;
+      resizeRenderer();
+    }
+  }
+
+  function loop(){
+    if(!game.running) return;
+    requestAnimationFrame(loop);
+    if(game.paused) return;
+    const dt=Math.min(.034,game.clock.getDelta());
+    if(!Number.isFinite(dt)||dt<=0) return;
+
+    if(game.reloading && performance.now()>=game.reloadEnd) finishReload();
+    if(game.input.fire){
+      const def=weaponDefs[game.currentWeapon];
+      shoot();
+      if(!def.auto) game.input.fire=false;
+    }
+
+    updatePlayer(dt);
+    game.aiAccumulator+=dt;
+    if(game.aiAccumulator>=.05){
+      updateBotsAI(game.aiAccumulator);
+      game.aiAccumulator=0;
+      updateRadar();
+    }
+    updateDeadBots(dt);
+    updateTimer();
+    adaptiveResolution(dt);
+    game.renderer.render(game.scene,game.camera);
+  }
+
+  function setPaused(value){
+    if(!game.running) return;
+    game.paused=value;
+    game.input.fire=false;
+    $('#pauseOverlay').classList.toggle('active',value);
+    if(!value){ game.clock.getDelta(); }
+  }
+
+  $('#pauseBtn').addEventListener('click',()=>setPaused(true));
+  $('#resumeBtn').addEventListener('click',()=>setPaused(false));
+  $('#leaveBtn').addEventListener('click',()=>{ setPaused(false); stopGame(true); });
+
+  $('#weaponSlots').addEventListener('click',e=>{
+    const btn=e.target.closest('.weaponSlot');
+    if(btn) setWeapon(btn.dataset.weapon);
+  });
+
+  $('#reloadBtn').addEventListener('pointerdown',e=>{ e.preventDefault(); reload(); });
+  $('#scopeBtn').addEventListener('pointerdown',e=>{ e.preventDefault(); toggleScope(); });
+  $('#jumpBtn').addEventListener('pointerdown',e=>{ e.preventDefault(); jump(); });
+
+  function holdButton(el,onStart,onEnd){
+    const active=new Set();
+    el.addEventListener('pointerdown',e=>{
+      e.preventDefault();
+      active.add(e.pointerId);
+      el.setPointerCapture?.(e.pointerId);
+      el.classList.add('pressed');
+      onStart?.(e);
+    });
+    const end=e=>{
+      if(!active.has(e.pointerId)) return;
+      active.delete(e.pointerId);
+      el.classList.remove('pressed');
+      onEnd?.(e);
+    };
+    el.addEventListener('pointerup',end);
+    el.addEventListener('pointercancel',end);
+  }
+
+  holdButton($('#fireRight'),()=>{game.input.fire=true;shoot();},()=>game.input.fire=false);
+  holdButton($('#fireLeft'),()=>{game.input.fire=true;shoot();},()=>game.input.fire=false);
+  holdButton($('#crouchBtn'),()=>game.player.crouch=true,()=>game.player.crouch=false);
+
+  const joyZone=$('#joystickZone');
+  const joyBase=$('#joyBase');
+  const joyKnob=$('#joyKnob');
+  let joyId=null;
+  let joyOrigin={x:0,y:0};
+
+  joyZone.addEventListener('pointerdown',e=>{
+    if(joyId!==null) return;
+    e.preventDefault();
+    joyId=e.pointerId;
+    joyOrigin={x:e.clientX,y:e.clientY};
+    joyBase.style.left=`${e.clientX}px`;
+    joyBase.style.top=`${e.clientY}px`;
+    joyBase.classList.add('active');
+    joyZone.setPointerCapture?.(e.pointerId);
+  });
+
+  joyZone.addEventListener('pointermove',e=>{
+    if(e.pointerId!==joyId) return;
+    e.preventDefault();
+    const dx=e.clientX-joyOrigin.x;
+    const dy=e.clientY-joyOrigin.y;
+    const max=42;
+    const len=Math.hypot(dx,dy);
+    const scale=len>max?max/len:1;
+    const x=dx*scale, y=dy*scale;
+    joyKnob.style.transform=`translate(calc(-50% + ${x}px),calc(-50% + ${y}px))`;
+    game.input.moveX=clamp(x/max,-1,1);
+    game.input.moveY=clamp(-y/max,-1,1);
+  });
+
+  function joyEnd(e){
+    if(e.pointerId!==joyId) return;
+    joyId=null;
+    game.input.moveX=0; game.input.moveY=0;
+    joyKnob.style.transform='translate(-50%,-50%)';
+    joyBase.classList.remove('active');
+  }
+  joyZone.addEventListener('pointerup',joyEnd);
+  joyZone.addEventListener('pointercancel',joyEnd);
+
+  const lookZone=$('#lookZone');
+  let lookId=null;
+  let lastLook={x:0,y:0};
+
+  lookZone.addEventListener('pointerdown',e=>{
+    if(lookId!==null) return;
+    e.preventDefault();
+    lookId=e.pointerId;
+    lastLook={x:e.clientX,y:e.clientY};
+    lookZone.setPointerCapture?.(e.pointerId);
+  });
+
+  lookZone.addEventListener('pointermove',e=>{
+    if(e.pointerId!==lookId) return;
+    e.preventDefault();
+    const dx=e.clientX-lastLook.x;
+    const dy=e.clientY-lastLook.y;
+    lastLook={x:e.clientX,y:e.clientY};
+    const sens=.0034;
+    game.player.yaw-=dx*sens;
+    game.player.pitch=clamp(game.player.pitch-dy*sens,-1.32,1.32);
+  });
+
+  function lookEnd(e){ if(e.pointerId===lookId) lookId=null; }
+  lookZone.addEventListener('pointerup',lookEnd);
+  lookZone.addEventListener('pointercancel',lookEnd);
+
+  addEventListener('keydown',e=>{
+    game.input.keys.add(e.code);
+    if(!game.running) return;
+    if(e.code==='Space'){ e.preventDefault(); jump(); }
+    if(e.code==='KeyR') reload();
+    if(e.code==='Digit1') setWeapon('knife');
+    if(e.code==='Digit2') setWeapon('deagle');
+    if(e.code==='Digit3') setWeapon('ak');
+    if(e.code==='Digit4') setWeapon('awp');
+    if(e.code==='KeyQ') toggleScope();
+    if(e.code==='Escape') setPaused(!game.paused);
+  });
+
+  addEventListener('keyup',e=>{
+    game.input.keys.delete(e.code);
+    if(e.code==='ControlLeft'||e.code==='KeyC') game.player.crouch=false;
+  });
+
+  $('#gameCanvas').addEventListener('mousedown',e=>{
+    if(!game.running||game.paused) return;
+    if(e.button===0){ game.input.fire=true; shoot(); }
+  });
+  addEventListener('mouseup',e=>{ if(e.button===0) game.input.fire=false; });
+  $('#gameCanvas').addEventListener('mousemove',e=>{
+    if(!game.running||game.paused||e.buttons!==2) return;
+    game.player.yaw-=e.movementX*.003;
+    game.player.pitch=clamp(game.player.pitch-e.movementY*.003,-1.32,1.32);
+  });
+
+  refreshEconomyUI();
+  buildRoulette();
+  renderInventory();
+  const runtimeStatus = $('#runtimeStatus');
+  if (runtimeStatus) runtimeStatus.textContent = 'INTERACTIVE READY';
+</script>
+</body>
+</html>
