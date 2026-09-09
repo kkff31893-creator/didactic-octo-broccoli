@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
+<title>Mini Windows</title>
+
+<meta name="theme-color" content="#07111d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Mini Windows">
+<link rel="manifest" href="manifest.webmanifest">
+
+<style>
+  :root{
+    --taskbar: rgba(20,24,32,.72);
+    --glass: rgba(25,31,42,.72);
+    --border: rgba(255,255,255,.16);
+    --text: #fff;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#07111d;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Arial,sans-serif;color:var(--text);touch-action:manipulation;overscroll-behavior:none}
+  body{
+    background:
+      radial-gradient(circle at 70% 20%, rgba(74,141,255,.45), transparent 28%),
+      radial-gradient(circle at 25% 85%, rgba(94,50,255,.36), transparent 32%),
+      linear-gradient(135deg,#05101a,#0a1830 48%,#07111d);
+  }
+  #desktop{position:fixed;inset:0;padding:18px 14px 82px;overflow:hidden}
+  .icons{display:grid;grid-template-columns:repeat(2,78px);gap:14px 10px;align-content:start}
+  .desk-icon{border:0;background:transparent;color:white;width:78px;padding:6px 4px;border-radius:12px;text-align:center;touch-action:manipulation;pointer-events:auto;cursor:pointer}
+  .desk-icon:active{background:rgba(255,255,255,.12)}
+  .iconbox{width:48px;height:48px;margin:auto;border-radius:12px;display:grid;place-items:center;font-size:27px;background:rgba(255,255,255,.12);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.14);box-shadow:0 8px 24px rgba(0,0,0,.25)}
+  .desk-icon span{display:block;font-size:11px;margin-top:6px;text-shadow:0 1px 3px #000}
+  #taskbar{position:fixed;left:10px;right:10px;bottom:max(8px,env(safe-area-inset-bottom));height:56px;border-radius:18px;background:var(--taskbar);backdrop-filter:blur(24px) saturate(150%);border:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:7px 10px;z-index:1000;box-shadow:0 12px 35px rgba(0,0,0,.35)}
+  .task-left,.task-mid,.task-right{display:flex;align-items:center;gap:7px}
+  .task-btn{width:42px;height:42px;border:0;border-radius:12px;background:rgba(255,255,255,.07);color:#fff;font-size:21px;display:grid;place-items:center;touch-action:manipulation;pointer-events:auto;cursor:pointer}
+  .task-btn:active{transform:scale(.94);background:rgba(255,255,255,.16)}
+  #clock{font-size:11px;text-align:right;line-height:1.25;min-width:54px}
+  #startMenu{position:fixed;left:50%;transform:translateX(-50%) scale(.96);bottom:74px;width:min(92vw,470px);height:min(68vh,470px);background:rgba(22,28,40,.86);backdrop-filter:blur(28px) saturate(150%);border:1px solid var(--border);border-radius:24px;padding:18px;z-index:900;opacity:0;pointer-events:none;transition:.18s ease;box-shadow:0 24px 60px rgba(0,0,0,.45)}
+  #startMenu.show{opacity:1;pointer-events:auto;transform:translateX(-50%) scale(1)}
+  .search{height:42px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.12);border-radius:13px;padding:0 14px;display:flex;align-items:center;color:#cbd5e1;font-size:13px;margin-bottom:14px}
+  .start-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  .app-tile{border:0;background:rgba(255,255,255,.06);border-radius:16px;color:white;padding:12px 4px;min-height:78px;font-size:11px;touch-action:manipulation;pointer-events:auto;cursor:pointer}
+  .app-tile b{display:block;font-size:25px;margin-bottom:7px}
+  .app-tile:active{background:rgba(255,255,255,.14)}
+  .window{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(92vw,720px);height:min(72vh,470px);background:rgba(18,24,34,.94);backdrop-filter:blur(22px);border:1px solid var(--border);border-radius:18px;overflow:hidden;z-index:500;box-shadow:0 24px 70px rgba(0,0,0,.5);display:none}
+  .window.show{display:block}
+  .titlebar{height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 9px 0 14px;background:rgba(255,255,255,.035);border-bottom:1px solid rgba(255,255,255,.08)}
+  .title{font-size:13px;font-weight:600}
+  .controls{display:flex;gap:5px}
+  .control{width:38px;height:34px;border:0;border-radius:9px;background:transparent;color:#fff;touch-action:manipulation;pointer-events:auto;cursor:pointer}
+  .control:active{background:rgba(255,255,255,.12)}
+  .control.close:active{background:#c42b1c}
+  .content{height:calc(100% - 46px);overflow:auto;-webkit-overflow-scrolling:touch;padding:14px;touch-action:pan-y}
+  .explorer{display:grid;grid-template-columns:128px 1fr;height:100%;padding:0}
+  .sidebar{padding:12px;border-right:1px solid rgba(255,255,255,.08);font-size:12px}
+  .sideitem{padding:9px;border-radius:9px;margin-bottom:3px}
+  .sideitem:first-child{background:rgba(255,255,255,.09)}
+  .files{padding:14px}
+  .filegrid{display:grid;grid-template-columns:repeat(3,minmax(70px,1fr));gap:10px}
+  .file{padding:12px;border-radius:12px;background:rgba(255,255,255,.05);font-size:11px}
+  .file b{display:block;font-size:24px;margin-bottom:6px}
+  textarea{width:100%;height:100%;resize:none;background:#10151e;color:white;border:0;outline:none;padding:14px;font:15px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace}
+  .settings{display:grid;gap:10px}
+  .setting{display:flex;justify-content:space-between;align-items:center;padding:13px;border-radius:14px;background:rgba(255,255,255,.06);font-size:13px}
+  .toggle{width:44px;height:24px;border-radius:999px;background:#2f6fed;padding:3px}.toggle:after{content:"";display:block;width:18px;height:18px;border-radius:50%;background:white;margin-left:20px}
+  .about{font-size:14px;line-height:1.55;color:#d7deea}
+  .calc{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  #display{grid-column:1/-1;height:62px;border-radius:13px;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:flex-end;padding:0 16px;font-size:27px;overflow:hidden}
+  .key{height:52px;border:0;border-radius:12px;background:rgba(255,255,255,.08);color:white;font-size:18px;touch-action:manipulation;pointer-events:auto;cursor:pointer}
+  .key:active{background:rgba(255,255,255,.17)}
+  @media (orientation:portrait){
+    #desktop{padding-top:28px}
+    .window{height:min(70vh,580px)}
+    .start-grid{grid-template-columns:repeat(3,1fr)}
+  }
+
+  .snake-wrap{height:100%;display:flex;flex-direction:column;gap:10px;align-items:center;justify-content:center}
+  .snake-hud{width:min(100%,360px);display:flex;justify-content:space-between;align-items:center;font-size:13px}
+  #snakeCanvas{width:min(100%,360px);aspect-ratio:1/1;background:#0b1119;border:1px solid rgba(255,255,255,.12);border-radius:16px;image-rendering:pixelated}
+  .snake-controls{display:grid;grid-template-columns:repeat(3,64px);grid-template-rows:repeat(2,52px);gap:8px;justify-content:center}
+  .snake-btn{border:0;border-radius:14px;background:rgba(255,255,255,.10);color:white;font-size:22px;touch-action:manipulation;pointer-events:auto;cursor:pointer}
+  .snake-btn:active{background:rgba(255,255,255,.20);transform:scale(.95)}
+  .snake-up{grid-column:2;grid-row:1}.snake-left{grid-column:1;grid-row:2}.snake-down{grid-column:2;grid-row:2}.snake-right{grid-column:3;grid-row:2}
+
+</style>
+</head>
+<body>
+<div id="desktop">
+  <div class="icons">
+    <button class="desk-icon" data-app="explorer"><div class="iconbox">📁</div><span>Проводник</span></button>
+    <button class="desk-icon" data-app="notepad"><div class="iconbox">📝</div><span>Блокнот</span></button>
+    <button class="desk-icon" data-app="calculator"><div class="iconbox">🧮</div><span>Калькулятор</span></button>
+    <button class="desk-icon" data-app="settings"><div class="iconbox">⚙️</div><span>Параметры</span></button>
+    <button class="desk-icon" data-app="snake"><div class="iconbox">🐍</div><span>Змейка</span></button>
+  </div>
+</div>
+
+<div id="startMenu">
+  <div class="search">🔎 Поиск приложений и файлов</div>
+  <div class="start-grid">
+    <button class="app-tile" data-app="explorer"><b>📁</b>Проводник</button>
+    <button class="app-tile" data-app="notepad"><b>📝</b>Блокнот</button>
+    <button class="app-tile" data-app="calculator"><b>🧮</b>Калькулятор</button>
+    <button class="app-tile" data-app="settings"><b>⚙️</b>Параметры</button>
+    <button class="app-tile" data-app="about"><b>💻</b>О системе</button>
+    <button class="app-tile" data-app="snake"><b>🐍</b>Змейка</button>
+  </div>
+</div>
+
+<div class="window" id="explorer">
+  <div class="titlebar"><div class="title">📁 Проводник</div><div class="controls"><button class="control close">✕</button></div></div>
+  <div class="content explorer">
+    <div class="sidebar"><div class="sideitem">Главная</div><div class="sideitem">Рабочий стол</div><div class="sideitem">Загрузки</div><div class="sideitem">Документы</div><div class="sideitem">Изображения</div></div>
+    <div class="files">
+      <div class="filegrid">
+        <div class="file"><b>📂</b>Игры</div><div class="file"><b>📂</b>Проекты</div><div class="file"><b>🖼️</b>wallpaper.png</div>
+        <div class="file"><b>📄</b>README.txt</div><div class="file"><b>🎵</b>music.mp3</div><div class="file"><b>🎬</b>video.mp4</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="window" id="notepad">
+  <div class="titlebar"><div class="title">📝 Блокнот</div><div class="controls"><button class="control close">✕</button></div></div>
+  <div class="content" style="padding:0"><textarea placeholder="Начните печатать...">Добро пожаловать в Mini Windows на iPhone!</textarea></div>
+</div>
+
+<div class="window" id="calculator">
+  <div class="titlebar"><div class="title">🧮 Калькулятор</div><div class="controls"><button class="control close">✕</button></div></div>
+  <div class="content">
+    <div class="calc">
+      <div id="display">0</div>
+      <button class="key">C</button><button class="key">±</button><button class="key">%</button><button class="key">÷</button>
+      <button class="key">7</button><button class="key">8</button><button class="key">9</button><button class="key">×</button>
+      <button class="key">4</button><button class="key">5</button><button class="key">6</button><button class="key">−</button>
+      <button class="key">1</button><button class="key">2</button><button class="key">3</button><button class="key">+</button>
+      <button class="key">0</button><button class="key">.</button><button class="key">⌫</button><button class="key">=</button>
+    </div>
+  </div>
+</div>
+
+<div class="window" id="settings">
+  <div class="titlebar"><div class="title">⚙️ Параметры</div><div class="controls"><button class="control close">✕</button></div></div>
+  <div class="content">
+    <div class="settings">
+      <div class="setting"><span>Wi‑Fi</span><div class="toggle"></div></div>
+      <div class="setting"><span>Bluetooth</span><div class="toggle"></div></div>
+      <div class="setting"><span>Ночной свет</span><div class="toggle"></div></div>
+      <div class="setting"><span>Режим игры</span><div class="toggle"></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="window" id="about">
+  <div class="titlebar"><div class="title">💻 О системе</div><div class="controls"><button class="control close">✕</button></div></div>
+  <div class="content about">
+    <h2 style="margin-top:0">Mini Windows</h2>
+    <p>Интерактивный симулятор рабочего стола, сделанный для сенсорного предпросмотра на iPhone.</p>
+    <p><b>Сборка:</b> Mobile Preview<br><b>Интерфейс:</b> touch-first<br><b>Приложения:</b> Проводник, Блокнот, Калькулятор, Параметры.</p>
+  </div>
+</div>
+
+
+<div class="window" id="snake">
+  <div class="titlebar"><div class="title">🐍 Змейка</div><div class="controls"><button class="control close">✕</button></div></div>
+  <div class="content">
+    <div class="snake-wrap">
+      <div class="snake-hud"><b>Счёт: <span id="snakeScore">0</span></b><span id="snakeState">Нажми стрелку</span></div>
+      <canvas id="snakeCanvas" width="360" height="360"></canvas>
+      <div class="snake-controls">
+        <button class="snake-btn snake-up" data-dir="up">↑</button>
+        <button class="snake-btn snake-left" data-dir="left">←</button>
+        <button class="snake-btn snake-down" data-dir="down">↓</button>
+        <button class="snake-btn snake-right" data-dir="right">→</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="taskbar">
+  <div class="task-left"><button class="task-btn" id="startBtn">⊞</button></div>
+  <div class="task-mid">
+    <button class="task-btn" data-app="explorer">📁</button>
+    <button class="task-btn" data-app="notepad">📝</button>
+    <button class="task-btn" data-app="calculator">🧮</button>
+    <button class="task-btn" data-app="snake">🐍</button>
+  </div>
+  <div class="task-right"><div id="clock"></div></div>
+</div>
+
+<script>
+  const startBtn=document.getElementById('startBtn'), menu=document.getElementById('startMenu');
+  const windows=[...document.querySelectorAll('.window')];
+  let z=500;
+
+  function onTap(el, fn){
+    if(!el) return;
+    let usedPointer=false;
+    el.addEventListener('pointerup', e=>{
+      usedPointer=true;
+      e.preventDefault();
+      fn(e);
+      setTimeout(()=>usedPointer=false, 350);
+    }, {passive:false});
+    el.addEventListener('touchend', e=>{
+      if(usedPointer) return;
+      e.preventDefault();
+      fn(e);
+    }, {passive:false});
+    el.addEventListener('click', e=>{
+      if(usedPointer) return;
+      fn(e);
+    });
+  }
+
+  onTap(startBtn,()=>menu.classList.toggle('show'));
+  document.querySelectorAll('[data-app]').forEach(b=>onTap(b,()=>{
+    const w=document.getElementById(b.dataset.app);
+    if(w){
+      windows.forEach(x=>x.style.zIndex=500);
+      w.classList.add('show');
+      w.style.zIndex=++z;
+      menu.classList.remove('show');
+    }
+  }));
+  document.querySelectorAll('.close').forEach(b=>onTap(b,e=>{
+    const target=(e.currentTarget||b).closest('.window');
+    if(target) target.classList.remove('show');
+  }));
+  windows.forEach(w=>w.addEventListener('pointerdown',()=>w.style.zIndex=++z));
+
+  function tick(){
+    const d=new Date(), pad=n=>String(n).padStart(2,'0');
+    document.getElementById('clock').innerHTML=`${pad(d.getHours())}:${pad(d.getMinutes())}<br>${pad(d.getDate())}.${pad(d.getMonth()+1)}.${d.getFullYear()}`;
+  }
+  tick(); setInterval(tick,1000);
+
+  // Touch-friendly calculator
+  const disp=document.getElementById('display');
+  let expr='';
+  document.querySelectorAll('#calculator .key').forEach(k=>onTap(k,()=>{
+    let v=k.textContent;
+    if(v==='C'){expr='';disp.textContent='0';return}
+    if(v==='⌫'){expr=expr.slice(0,-1);disp.textContent=expr||'0';return}
+    if(v==='±'){ if(expr){ expr=expr.startsWith('-')?expr.slice(1):'-'+expr; disp.textContent=expr;} return}
+    if(v==='%'){ try{expr=String(Function('return ('+expr+')/100')());disp.textContent=expr}catch{} return}
+    if(v==='='){ try{ const safe=expr.replaceAll('×','*').replaceAll('÷','/').replaceAll('−','-'); expr=String(Function('"use strict";return ('+safe+')')()); disp.textContent=expr }catch{disp.textContent='Ошибка';expr=''} return}
+    expr+=v;disp.textContent=expr;
+  }));
+
+  // Simple drag for windows by titlebar, good for landscape iPhone.
+  document.querySelectorAll('.titlebar').forEach(bar=>{
+    let sx=0,sy=0,ox=0,oy=0,drag=false;
+    bar.addEventListener('pointerdown',e=>{
+      if(e.target.closest('button')) return;
+      const w=bar.closest('.window'), r=w.getBoundingClientRect();
+      w.style.transform='none'; w.style.left=r.left+'px'; w.style.top=r.top+'px';
+      sx=e.clientX; sy=e.clientY; ox=r.left; oy=r.top; drag='pending'; bar.setPointerCapture(e.pointerId);
+    });
+    bar.addEventListener('pointermove',e=>{
+      if(!drag)return; const w=bar.closest('.window');
+      if(drag==='pending' && Math.hypot(e.clientX-sx,e.clientY-sy)<8) return;
+      drag=true;
+      let nx=ox+e.clientX-sx, ny=oy+e.clientY-sy;
+      nx=Math.max(4,Math.min(innerWidth-w.offsetWidth-4,nx));
+      ny=Math.max(4,Math.min(innerHeight-w.offsetHeight-68,ny));
+      w.style.left=nx+'px';w.style.top=ny+'px';
+    });
+    bar.addEventListener('pointerup',()=>drag=false);
+    bar.addEventListener('pointercancel',()=>drag=false);
+  });
+
+  // Snake game
+  const sc=document.getElementById('snakeCanvas'), sctx=sc.getContext('2d');
+  const snakeScore=document.getElementById('snakeScore'), snakeState=document.getElementById('snakeState');
+  const grid=18, cell=sc.width/grid;
+  let snakeBody, food, dir, nextDir, snakeTimer=null, score=0, started=false;
+
+  function resetSnake(){
+    snakeBody=[{x:8,y:9},{x:7,y:9},{x:6,y:9}];
+    food={x:13,y:9}; dir={x:1,y:0}; nextDir={x:1,y:0}; score=0; started=false;
+    snakeScore.textContent='0'; snakeState.textContent='Нажми стрелку'; drawSnake();
+  }
+  function randomFood(){
+    do{ food={x:Math.floor(Math.random()*grid),y:Math.floor(Math.random()*grid)} }
+    while(snakeBody.some(p=>p.x===food.x&&p.y===food.y));
+  }
+  function drawSnake(){
+    sctx.clearRect(0,0,sc.width,sc.height);
+    sctx.fillStyle='#0b1119'; sctx.fillRect(0,0,sc.width,sc.height);
+    sctx.strokeStyle='rgba(255,255,255,.035)'; sctx.lineWidth=1;
+    for(let i=1;i<grid;i++){sctx.beginPath();sctx.moveTo(i*cell,0);sctx.lineTo(i*cell,sc.height);sctx.stroke();sctx.beginPath();sctx.moveTo(0,i*cell);sctx.lineTo(sc.width,i*cell);sctx.stroke()}
+    sctx.fillStyle='#ff4d4d'; sctx.beginPath(); sctx.arc(food.x*cell+cell/2,food.y*cell+cell/2,cell*.34,0,Math.PI*2); sctx.fill();
+    snakeBody.forEach((p,i)=>{
+      sctx.fillStyle=i===0?'#7dff85':'#35c95a';
+      sctx.fillRect(p.x*cell+2,p.y*cell+2,cell-4,cell-4);
+    });
+  }
+  function snakeStep(){
+    if(!started)return;
+    dir=nextDir;
+    const head={x:snakeBody[0].x+dir.x,y:snakeBody[0].y+dir.y};
+    if(head.x<0||head.y<0||head.x>=grid||head.y>=grid||snakeBody.some(p=>p.x===head.x&&p.y===head.y)){
+      started=false; snakeState.textContent='Игра окончена — нажми стрелку'; clearInterval(snakeTimer); snakeTimer=null; return;
+    }
+    snakeBody.unshift(head);
+    if(head.x===food.x&&head.y===food.y){score++;snakeScore.textContent=score;randomFood()}else snakeBody.pop();
+    drawSnake();
+  }
+  function setSnakeDir(name){
+    const map={up:{x:0,y:-1},down:{x:0,y:1},left:{x:-1,y:0},right:{x:1,y:0}}, nd=map[name];
+    if(nd.x===-dir.x&&nd.y===-dir.y)return;
+    nextDir=nd;
+    if(!started){
+      if(snakeState.textContent.includes('окончена')) resetSnake();
+      started=true; snakeState.textContent='Игра идёт';
+      if(!snakeTimer) snakeTimer=setInterval(snakeStep,140);
+    }
+  }
+  document.querySelectorAll('.snake-btn').forEach(b=>onTap(b,()=>setSnakeDir(b.dataset.dir)));
+  window.addEventListener('keydown',e=>{
+    const m={ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right'};
+    if(m[e.key]){e.preventDefault();setSnakeDir(m[e.key])}
+  });
+  let tx=0,ty=0;
+  sc.addEventListener('touchstart',e=>{const t=e.touches[0];tx=t.clientX;ty=t.clientY},{passive:true});
+  sc.addEventListener('touchend',e=>{const t=e.changedTouches[0],dx=t.clientX-tx,dy=t.clientY-ty;if(Math.max(Math.abs(dx),Math.abs(dy))<20)return;setSnakeDir(Math.abs(dx)>Math.abs(dy)?(dx>0?'right':'left'):(dy>0?'down':'up'))},{passive:true});
+  resetSnake();
+
+
+  if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+  }
+
+</script>
+</body>
+</html>
