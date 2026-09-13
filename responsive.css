@@ -1,0 +1,195 @@
+@media (min-width: 1920px) {
+  .hero-title {
+    font-size: 238px;
+  }
+}
+
+@media (max-width: 1100px) {
+  .header nav {
+    gap: 20px;
+  }
+  .section-description {
+    min-width: 180px;
+  }
+  .project-interface {
+    grid-template-columns: 0.65fr 1.35fr;
+    gap: 30px;
+  }
+  .app-sidebar {
+    display: none;
+  }
+  .app-content {
+    grid-template-columns: 1fr;
+  }
+  .capabilities {
+    gap: 40px;
+  }
+  .console-section {
+    gap: 35px;
+  }
+  .pattern-controls {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 800px) {
+  html {
+    scroll-padding-top: 84px;
+  }
+  .header {
+    min-height: 72px;
+  }
+  .header-console {
+    display: none;
+  }
+  .header nav {
+    gap: 18px;
+  }
+  .header nav a {
+    font-size: 10px;
+  }
+  .hero-meta {
+    font-size: 8px;
+  }
+  .hero-title {
+    margin-top: 48px;
+  }
+  .hero-bottom {
+    margin-top: 35px;
+  }
+  .hero-caption {
+    font-size: 12px;
+  }
+  .hero-rule span:nth-child(2) {
+    display: none;
+  }
+  .workspace,
+  .work {
+    padding-top: 90px;
+  }
+  .workbench {
+    grid-template-columns: 1fr;
+  }
+  .editor-pane {
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .code-panel {
+    height: 300px;
+  }
+  #live-preview {
+    min-height: 360px;
+  }
+  .project-interface {
+    grid-template-columns: 1fr;
+    gap: 35px;
+  }
+  .project-side {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px 30px;
+  }
+  .project-side .eyebrow {
+    grid-column: 1 / -1;
+    margin-bottom: 0;
+  }
+  .project-side > p:not(.eyebrow) {
+    margin-top: 0;
+  }
+  .app-window {
+    transform: none;
+    box-shadow: 8px 12px 0 #191c17;
+  }
+  .capabilities,
+  .console-section {
+    grid-template-columns: 1fr;
+  }
+  .capabilities-intro {
+    position: static;
+  }
+  .capabilities-mark {
+    display: none;
+  }
+  .game-field {
+    height: 410px;
+  }
+  .pattern-stage {
+    height: 300px;
+  }
+}
+
+@media (max-width: 560px) {
+  :root {
+    --gutter: 18px;
+  }
+  .hero-title {
+    font-size: clamp(36px, 9.8vw, 55px);
+  }
+  .header nav {
+    display: none;
+  }
+  .hero-meta,
+  .hero-rule,
+  .game-header,
+  .generative-top,
+  .project-caption,
+  .about-bottom,
+  .footer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .hero-bottom {
+    grid-template-columns: 1fr auto;
+  }
+  .hero-caption {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+  .round-link {
+    width: 58px;
+    height: 58px;
+  }
+  .section-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .section-description {
+    min-width: 0;
+  }
+  .project-side {
+    display: block;
+  }
+  .project-side > p:not(.eyebrow) {
+    margin-top: 20px;
+  }
+  .app-main {
+    padding: 22px 18px;
+  }
+  .game-stats {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .project-generative {
+    padding: 24px 18px;
+  }
+  .generative-top > p {
+    align-self: flex-start;
+    margin-top: 18px;
+  }
+  .pattern-controls {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .skill-content {
+    padding-left: 0;
+  }
+  .terminal-output {
+    height: 240px;
+  }
+  .terminal-form {
+    padding-inline: 14px;
+  }
+  .about-title {
+    font-size: clamp(42px, 15vw, 72px);
+  }
+}
