@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#101110" />
+    <meta
+      name="description"
+      content="Дмитрий Каменских — цифровые интерфейсы, интерактивные сайты и эксперименты."
+    />
+    <title>Dmitry Kamenskikh — Digital playground</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/animations.css" />
+    <link rel="stylesheet" href="css/responsive.css" />
+    <script defer src="js/main.js"></script>
+    <script defer src="js/animations.js"></script>
+    <script defer src="js/terminal.js"></script>
+    <script defer src="js/editor.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Перейти к содержимому</a>
+    <div class="scroll-progress" aria-hidden="true"></div>
+    <header class="header">
+      <a class="logo" href="#top" aria-label="На первый экран">
+        d<span class="logo-cross">×</span>k<span class="logo-dot">.</span>
+      </a>
+      <nav aria-label="Основная навигация">
+        <a href="#work">Playground <span>03</span></a>
+        <a href="#system">Capabilities</a> <a href="#about">About</a>
+      </nav>
+      <a class="header-console" href="#console">
+        <span class="status-dot"></span> Open terminal ↗
+      </a>
+    </header>
+    <main id="main">
+      <section class="hero section-shell" id="top">
+        <div class="hero-meta mono">
+          <span>Independent digital playground</span>
+          <span>Design × engineering</span>
+        </div>
+        <h1 class="hero-title" aria-label="Dmitry Kamenskikh">
+          <span class="title-mask"><span>DMITRY</span></span>
+          <span class="title-mask"
+            ><span>KAMENSKIKH<span class="title-point">.</span></span></span
+          >
+        </h1>
+        <div class="hero-bottom">
+          <p class="hero-statement">
+            I design.<br />
+            I build.<br />
+            <span>I experiment.</span>
+          </p>
+          <p class="hero-caption">
+            Интерфейс — не картинка.<br />
+            Он должен отвечать, двигаться<br />
+            и чувствоваться.
+          </p>
+          <a
+            class="round-link magnetic"
+            href="#workspace"
+            aria-label="Открыть интерактивный редактор"
+          >
+            <span>↓</span>
+          </a>
+        </div>
+        <div class="hero-rule mono">
+          <span>Scroll to interact</span>
+          <span>Not a presentation. A working interface.</span>
+          <span>001 — 005</span>
+        </div>
+      </section>
+      <section class="workspace section-shell" id="workspace">
+        <div class="section-heading reveal">
+          <div>
+            <p class="eyebrow">01 / THE WORKING SURFACE</p>
+            <h2>Thought.<br /><span class="muted">Made tangible.</span></h2>
+          </div>
+          <p class="section-description">
+            Не смотрите на код.<br />
+            Измените его.<br />
+            Результат — справа.
+          </p>
+        </div>
+        <div class="workbench reveal">
+          <div class="editor-pane">
+            <div class="window-bar">
+              <span class="window-mark" aria-hidden="true">⌘</span>
+              <span class="mono">playground / source</span>
+              <button class="text-button" id="replay-code" type="button">
+                Replay ↻
+              </button>
+            </div>
+            <div
+              class="editor-tabs"
+              role="tablist"
+              aria-label="Файлы редактора"
+            >
+              <button
+                id="tab-html"
+                class="editor-tab"
+                role="tab"
+                aria-selected="false"
+                aria-controls="code-panel"
+                tabindex="-1"
+                data-file="html"
+                type="button"
+              >
+                index.html
+              </button>
+              <button
+                id="tab-css"
+                class="editor-tab active"
+                role="tab"
+                aria-selected="true"
+                aria-controls="code-panel"
+                data-file="css"
+                type="button"
+              >
+                styles.css
+              </button>
+              <button
+                id="tab-js"
+                class="editor-tab"
+                role="tab"
+                aria-selected="false"
+                aria-controls="code-panel"
+                tabindex="-1"
+                data-file="js"
+                type="button"
+              >
+                app.js
+              </button>
+            </div>
+            <div
+              class="code-panel"
+              id="code-panel"
+              role="tabpanel"
+              aria-labelledby="tab-css"
+            >
+              <div
+                class="line-numbers mono"
+                id="line-numbers"
+                aria-hidden="true"
+              ></div>
+              <div class="code-surface">
+                <pre
+                  class="code-highlight"
+                  aria-hidden="true"
+                ><code id="highlight"></code></pre>
+                <textarea
+                  id="code-input"
+                  aria-label="Редактировать styles.css"
+                  spellcheck="false"
+                  autocapitalize="off"
+                  autocomplete="off"
+                  wrap="off"
+                ></textarea>
+              </div>
+            </div>
+            <div class="editor-footer mono">
+              <span id="editor-state">Ready to edit</span>
+              <span>UTF-8 <span id="file-language">CSS</span></span>
+            </div>
+          </div>
+          <div class="preview-pane">
+            <div class="window-bar">
+              <span class="mono"
+                ><span class="status-dot"></span> Live output</span
+              >
+              <span class="mono preview-note">Sandbox / 01</span>
+            </div>
+            <iframe
+              id="live-preview"
+              title="Интерактивный результат кода"
+              sandbox="allow-scripts"
+            ></iframe>
+            <div class="preview-caption mono">
+              <span>Change the source. Feel the difference.</span>
+              <span>↗</span>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="work section-shell" id="work">
+        <div class="section-heading reveal">
+          <div>
+            <p class="eyebrow">02 / SELECTED INTERACTIONS</p>
+            <h2>
+              Different forms.<br /><span class="muted">Same curiosity.</span>
+            </h2>
+          </div>
+          <p class="section-description">
+            Три небольших работающих демо.<br />
+            Не клиентские кейсы.<br />
+            Пространство для эксперимента.
+          </p>
+        </div>
+        <article class="project project-interface reveal">
+          <div class="project-side">
+            <p class="eyebrow">01 — INTERFACE STUDY</p>
+            <h3>Quiet<br />control.</h3>
+            <p>Система состояний.<br />Меньше шума, больше ясности.</p>
+            <div class="tags">
+              <span>WEB DEVELOPMENT</span> <span>UI / UX</span>
+            </div>
+          </div>
+          <div class="app-window">
+            <div class="app-top mono">
+              <span><span class="tiny-square"></span> FOCUS / WORKSPACE</span>
+              <span>Local demo</span>
+            </div>
+            <div class="app-content">
+              <div class="app-sidebar mono" aria-hidden="true">
+                <span class="sidebar-active">Overview</span>
+                <span>Activity</span> <span>Archive</span>
+                <span class="sidebar-bottom">Workspace 01</span>
+              </div>
+              <div class="app-main">
+                <div class="app-title">
+                  <span>Make room<br />for good work.</span>
+                  <span class="app-symbol" aria-hidden="true">✳</span>
+                </div>
+                <div
+                  class="segmented"
+                  role="group"
+                  aria-label="Режим рабочего пространства"
+                >
+                  <button
+                    type="button"
+                    class="selected"
+                    data-mode="focus"
+                    aria-pressed="true"
+                  >
+                    Focus
+                  </button>
+                  <button
+                    type="button"
+                    data-mode="explore"
+                    aria-pressed="false"
+                  >
+                    Explore
+                  </button>
+                  <button type="button" data-mode="rest" aria-pressed="false">
+                    Rest
+                  </button>
+                </div>
+                <div
+                  class="activity-chart"
+                  id="activity-chart"
+                  aria-hidden="true"
+                >
+                  <i></i><i></i><i></i><i></i><i></i><i></i> <i></i><i></i
+                  ><i></i><i></i><i></i><i></i>
+                </div>
+                <div class="app-bottom">
+                  <p id="mode-description" aria-live="polite">
+                    One thing. Full attention.
+                  </p>
+                  <span class="mono" id="mode-index">MODE / 01</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+        <article class="project-game reveal">
+          <div class="game-header">
+            <div>
+              <p class="eyebrow">02 — BROWSER GAME PROTOTYPE</p>
+              <h3>Catch the signal.</h3>
+            </div>
+            <div class="game-stats mono">
+              <span>HITS <strong id="game-score">00</strong></span>
+              <span>TIME <strong id="game-time">20</strong>s</span>
+            </div>
+          </div>
+          <div class="game-field" id="game-field">
+            <div class="game-cross cross-one" aria-hidden="true">+</div>
+            <div class="game-cross cross-two" aria-hidden="true">+</div>
+            <div class="game-intro" id="game-intro">
+              <span class="mono">REACTION TEST / 20 SEC</span>
+              <p>Find it.<br />Catch it.<br /><span>Repeat.</span></p>
+              <button
+                class="primary-button magnetic"
+                id="game-start"
+                type="button"
+              >
+                Start experiment <span>↗</span>
+              </button>
+            </div>
+            <button
+              class="game-target"
+              id="game-target"
+              type="button"
+              aria-label="Поймать сигнал"
+              hidden
+            >
+              <span>+</span>
+            </button>
+            <div class="game-result" id="game-result" aria-live="polite"></div>
+            <span class="game-coordinate mono" aria-hidden="true"
+              >X / INTERACT &nbsp; Y / REACT</span
+            >
+          </div>
+          <div class="project-caption">
+            <span class="mono">GAME DEVELOPMENT / INTERACTION</span>
+            <span>Мышь, касание или клавиатура.</span>
+          </div>
+        </article>
+        <article class="project-generative reveal">
+          <div class="generative-top">
+            <div>
+              <p class="eyebrow">03 — GENERATIVE SYSTEM</p>
+              <h3>Order.<br />With exceptions.</h3>
+            </div>
+            <p>
+              Один алгоритм.<br />Разные состояния.<br />Ничего случайного в
+              подходе.
+            </p>
+          </div>
+          <div class="pattern-stage">
+            <canvas
+              id="pattern-canvas"
+              aria-label="Генеративный линейный паттерн"
+            ></canvas>
+            <span class="pattern-label mono"
+              >FIELD STUDY / <span id="pattern-seed">001</span></span
+            >
+          </div>
+          <div class="pattern-controls">
+            <span class="mono">CREATIVE CODING / EXPERIMENTS</span>
+            <label class="mono" for="pattern-density">
+              Density
+              <input
+                type="range"
+                id="pattern-density"
+                min="12"
+                max="38"
+                value="24"
+              />
+            </label>
+            <button class="text-button" id="regenerate-pattern" type="button">
+              New composition ↗
+            </button>
+          </div>
+        </article>
+      </section>
+      <section class="capabilities section-shell" id="system">
+        <div class="capabilities-intro">
+          <p class="eyebrow">03 / CAPABILITIES</p>
+          <h2>Not a stack.<br /><span class="muted">A way to think.</span></h2>
+          <p>
+            От структуры и визуального языка<br />до поведения каждого элемента.
+          </p>
+          <span class="capabilities-mark" aria-hidden="true">↳</span>
+        </div>
+        <div class="skill-list">
+          <details class="skill-group reveal" open>
+            <summary>
+              <span class="mono skill-number">01</span> <span>DEVELOPMENT</span>
+              <span class="skill-plus" aria-hidden="true">+</span>
+            </summary>
+            <div class="skill-content">
+              <p>Структура, которая становится опытом.</p>
+              <ul>
+                <li>Frontend <span>01</span></li>
+                <li>Interactive Websites <span>02</span></li>
+                <li>Browser Games <span>03</span></li>
+              </ul>
+              <div class="skill-meter" aria-hidden="true"><i></i></div>
+            </div>
+          </details>
+          <details class="skill-group reveal">
+            <summary>
+              <span class="mono skill-number">02</span> <span>DESIGN</span>
+              <span class="skill-plus" aria-hidden="true">+</span>
+            </summary>
+            <div class="skill-content">
+              <p>Иерархия, ритм и характер интерфейса.</p>
+              <ul>
+                <li>UI Systems <span>01</span></li>
+                <li>Motion <span>02</span></li>
+                <li>Creative Direction <span>03</span></li>
+              </ul>
+              <div class="skill-meter" aria-hidden="true"><i></i></div>
+            </div>
+          </details>
+          <details class="skill-group reveal">
+            <summary>
+              <span class="mono skill-number">03</span> <span>EXPERIMENTS</span>
+              <span class="skill-plus" aria-hidden="true">+</span>
+            </summary>
+            <div class="skill-content">
+              <p>Поиск за пределами знакомых решений.</p>
+              <ul>
+                <li>WebGL <span>01</span></li>
+                <li>AI Development <span>02</span></li>
+                <li>Interactive Experiences <span>03</span></li>
+              </ul>
+              <div class="skill-meter" aria-hidden="true"><i></i></div>
+            </div>
+          </details>
+        </div>
+      </section>
+      <section class="console-section section-shell" id="console">
+        <div class="console-copy reveal">
+          <p class="eyebrow">04 / DIRECT INPUT</p>
+          <h2>Ask the<br /><span class="muted">interface.</span></h2>
+          <p>
+            Ещё один способ познакомиться.<br />Введите <code>help</code>, чтобы
+            начать.
+          </p>
+        </div>
+        <div class="terminal reveal">
+          <div class="window-bar">
+            <span class="mono">dk — interactive shell</span>
+            <span class="terminal-sign" aria-hidden="true">⌁</span>
+          </div>
+          <div
+            class="terminal-output mono"
+            id="terminal-output"
+            role="log"
+            aria-label="Вывод терминала"
+            aria-live="polite"
+            tabindex="0"
+          ></div>
+          <form class="terminal-form" id="terminal-form" autocomplete="off">
+            <label class="mono" for="terminal-input"
+              >visitor@dk <span>›</span></label
+            >
+            <input
+              class="mono"
+              id="terminal-input"
+              name="command"
+              aria-label="Команда терминала"
+              spellcheck="false"
+              autocapitalize="off"
+              placeholder="help"
+            />
+            <button type="submit" aria-label="Выполнить команду">↵</button>
+          </form>
+          <div class="terminal-shortcuts mono" aria-label="Быстрые команды">
+            <button type="button" data-command="about">about</button>
+            <button type="button" data-command="skills">skills</button>
+            <button type="button" data-command="projects">projects</button>
+            <button type="button" data-command="help">help</button>
+            <button type="button" data-command="clear">clear</button>
+          </div>
+        </div>
+      </section>
+      <section class="about section-shell" id="about">
+        <p class="eyebrow reveal">05 / BEHIND THE INTERFACE</p>
+        <h2 class="about-title reveal">
+          I build digital<br />
+          experiences,<br />
+          interfaces <span>&</span><br />
+          <span class="muted">experiments.</span>
+        </h2>
+        <div class="about-bottom reveal">
+          <div>
+            <p class="about-name">Дмитрий Каменских</p>
+            <span class="mono">DESIGN × CODE × CURIOSITY</span>
+          </div>
+          <a
+            class="round-link magnetic"
+            href="#top"
+            aria-label="Вернуться наверх"
+            >↑</a
+          >
+        </div>
+      </section>
+    </main>
+    <footer class="footer section-shell mono">
+      <span>DMITRY KAMENSKIKH</span> <span>Built to be experienced.</span>
+      <span>END / BEGIN AGAIN ↑</span>
+    </footer>
+  </body>
+</html>
