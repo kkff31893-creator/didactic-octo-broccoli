@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { site } from '../config/site'
-import { contactServices } from '../config/content'
+import { contactServices, profile } from '../config/content'
 
 function maskPhone(v: string) {
   let d = v.replace(/\D/g, '')
@@ -51,7 +51,7 @@ export default function Booking() {
       <div className="wrap">
         <div data-reveal>
           <p className="kicker">Запись</p>
-          <h2 className="h-l">Запишитесь на обслуживание.<br /><span className="mute">Остальное мы возьмём на себя.</span></h2>
+          <h2 className="h-l">{profile.booking.title}<br /><span className="mute">{profile.booking.sub}</span></h2>
         </div>
         <div className="book-grid">
           <div data-reveal>
