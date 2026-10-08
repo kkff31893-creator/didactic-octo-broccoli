@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { scanImage, scanSteps } from '../config/content'
+import { profile, scanImage, scanSteps } from '../config/content'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -41,12 +41,12 @@ export default function Diagnostics() {
   return (
     <section className="diag" ref={root}>
       <div className="diag-head">
-        <p className="kicker">Диагностика</p>
-        <h2 className="h-l">Видим то, что<br />не видно глазу.</h2>
+        <p className="kicker">{profile.scan.kicker}</p>
+        <h2 className="h-l">{profile.scan.title[0]}<br />{profile.scan.title[1]}</h2>
       </div>
       <div className="diag-frame">
         <div className="diag-inner">
-          <img src={scanImage} alt="Моторный отсек на диагностике" loading="lazy" />
+          <img src={scanImage} alt={profile.scan.alt} loading="lazy" />
           {scanSteps.map((s, i) => (
             <div key={s.title} className={'spot spot-' + i} style={{ left: s.x + '%', top: s.y + '%' }}>
               <i />
@@ -62,7 +62,7 @@ export default function Diagnostics() {
             <span>{cur.text}</span>
           </>
         ) : (
-          <span>Технологии, которые работают на ваш автомобиль.</span>
+          <span>{profile.scan.idle}</span>
         )}
       </div>
     </section>
