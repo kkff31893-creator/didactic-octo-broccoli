@@ -2,12 +2,12 @@ import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { ChevronRight } from 'lucide-react'
-import heroImg from '../assets/img/hero.webp'
-import { site } from '../config/site'
+import { profile } from '../config/profiles'
 
 gsap.registerPlugin(ScrollTrigger)
 
 export default function Hero({ ready }: { ready: boolean }) {
+  const hero = profile.hero
   const root = useRef<HTMLElement>(null)
   const img = useRef<HTMLImageElement>(null)
 
@@ -27,24 +27,22 @@ export default function Hero({ ready }: { ready: boolean }) {
   return (
     <section id="top" className="hero" ref={root}>
       <div className="hero-media">
-        <img ref={img} src={heroImg} alt="Автомобиль в тёмном сервисном боксе" fetchPriority="high" />
+        <img ref={img} src={hero.img} alt={hero.alt} fetchPriority="high" />
       </div>
       <div className="hero-beam" aria-hidden="true" />
       <div className="wrap hero-body">
         <div className="hero-row">
           <div>
-            <p className="kicker" data-in>{site.name} · {site.city}</p>
-            <h1 className="h-xl" data-in>Автосервис<br />в {site.cityIn}.</h1>
-            <p className="hero-sub" data-in>Профессиональное обслуживание вашего автомобиля. Диагностика, ремонт и ТО с гарантией на выполненные работы.</p>
+            <p className="kicker" data-in>{hero.kicker}</p>
+            <h1 className="h-xl" data-in>{hero.title[0]}<br />{hero.title[1]}</h1>
+            <p className="hero-sub" data-in>{hero.sub}</p>
             <div className="hero-cta" data-in>
-              <a className="btn btn-blue" href="#contact">Записаться на сервис</a>
+              <a className="btn btn-blue" href="#contact">{hero.cta}</a>
               <a className="link" href="#services">Наши услуги <ChevronRight /></a>
             </div>
           </div>
           <div className="hero-facts" data-in>
-            <span><b>{site.city}</b> · {site.address.replace(/^г\.\s*\S+,\s*/, '')}</span>
-            <span><b>Профессиональный сервис</b> с {site.since} года</span>
-            <span><b>Гарантия {site.warrantyMonths} мес.</b> на все работы</span>
+            {hero.facts.map(([b, t]) => <span key={b}><b>{b}</b> · {t}</span>)}
           </div>
         </div>
       </div>
