@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { highlights, services } from '../config/content'
+import { highlights, profile, services } from '../config/content'
 
 export default function Highlights() {
   const track = useRef<HTMLDivElement>(null)
@@ -29,8 +29,8 @@ export default function Highlights() {
   return (
     <section className="highlights" id="services">
       <div className="wrap sec-top" data-reveal>
-        <h2 className="h-l">Услуги. Всё в одном боксе.</h2>
-        <a className="link" href="#price">Цены на работы <ChevronRight /></a>
+        <h2 className="h-l">{profile.highlights.title}</h2>
+        <a className="link" href="#price">{profile.price.title.replace(/\.$/, '')} <ChevronRight /></a>
       </div>
 
       <div className="hl-track" ref={track} data-reveal>
@@ -58,12 +58,12 @@ export default function Highlights() {
 
       <div className="wrap price" id="price">
         <div data-reveal>
-          <h3 className="h-m">Цены без сюрпризов.</h3>
-          <p className="mute" style={{ marginTop: 14, maxWidth: '32ch' }}>Стоимость работ без запчастей. Точную сумму называем после осмотра и до начала ремонта.</p>
+          <h3 className="h-m">{profile.price.title}</h3>
+          <p className="mute" style={{ marginTop: 14, maxWidth: '32ch' }}>{profile.price.note}</p>
         </div>
         <ul data-reveal>
           {services.map((s) => (
-            <li key={s.title}>{s.title}<span>{s.price}</span></li>
+            <li key={s.title}>{s.title}{s.price && <span>{s.price}</span>}</li>
           ))}
         </ul>
       </div>
