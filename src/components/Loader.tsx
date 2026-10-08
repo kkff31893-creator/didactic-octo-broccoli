@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import heroImg from '../assets/img/hero.webp'
+import { profile } from '../config/profiles'
 
 // Реальный прогресс: шрифт и главное фото. Без искусственных задержек дольше 0,9 с.
 export default function Loader({ onDone }: { onDone: () => void }) {
@@ -15,7 +15,7 @@ export default function Loader({ onDone }: { onDone: () => void }) {
     const i = new Image()
     i.onload = bump
     i.onerror = bump
-    i.src = heroImg
+    i.src = profile.hero.img
     document.fonts.load('600 40px "Inter Tight Variable"').then(bump, bump)
 
     const t0 = performance.now()
