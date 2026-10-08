@@ -12,6 +12,7 @@ import Works from './components/Works'
 import Reviews from './components/Reviews'
 import Booking from './components/Booking'
 import Footer from './components/Footer'
+import { profile } from './config/profiles'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -46,8 +47,8 @@ export default function App() {
         <Highlights />
         <Diagnostics />
         <Numbers />
-        <Works />
-        <Reviews />
+        {profile.works && <Works />}
+        {profile.reviews && <Reviews />}
         <Booking />
       </main>
       <Footer />
